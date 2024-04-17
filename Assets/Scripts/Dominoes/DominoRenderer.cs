@@ -12,6 +12,7 @@ public class DominoRenderer : MonoBehaviour
     public List<DominoNumber> numberInfo = new List<DominoNumber>();
 
     Domino dominoNumbers;
+    [HideInInspector] public bool isInDeck;
 
     void Start()
     {
@@ -20,6 +21,20 @@ public class DominoRenderer : MonoBehaviour
 
     void Update()
     {
+        if (isInDeck)
+        {
+            for (int i = 0; i < sprites1.Count; i++)
+            {
+                sprites1[i].enabled = false;
+            
+            }
+            for (int i = 0; i < sprites2.Count; i++)
+            {
+                sprites2[i].enabled = false;
+            }
+            return;
+        }
+
         SetDots(sprites1, numberInfo[dominoNumbers.num1]);
         SetDots(sprites2, numberInfo[dominoNumbers.num2]);
     }
