@@ -12,31 +12,15 @@ public class DominoRenderer : MonoBehaviour
     public List<DominoNumber> numberInfo = new List<DominoNumber>();
 
     Domino dominoNumbers;
-    [HideInInspector] public bool isInDeck;
-
-    void Start()
-    {
-        dominoNumbers = GetComponent<Domino>();
-    }
+    [HideInInspector] public bool isInQueue;
+    [HideInInspector] public int leftNum;
+    [HideInInspector] public int rightNum;
 
     void Update()
     {
-        if (isInDeck)
-        {
-            for (int i = 0; i < sprites1.Count; i++)
-            {
-                sprites1[i].enabled = false;
-            
-            }
-            for (int i = 0; i < sprites2.Count; i++)
-            {
-                sprites2[i].enabled = false;
-            }
-            return;
-        }
 
-        SetDots(sprites1, numberInfo[dominoNumbers.num1]);
-        SetDots(sprites2, numberInfo[dominoNumbers.num2]);
+        SetDots(sprites1, numberInfo[leftNum]);
+        SetDots(sprites2, numberInfo[rightNum]);
     }
 
     void SetDots(List<SpriteRenderer> renderers, DominoNumber info)
@@ -46,6 +30,11 @@ public class DominoRenderer : MonoBehaviour
             SpriteRenderer renderer = renderers[i];
             renderer.color = info.dotColor;
             renderer.enabled = info.dots[i];
+
+            if (isInQueue)
+            {
+                renderer.enabled = false;
+            }
         }
     }
 }

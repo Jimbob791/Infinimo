@@ -302,10 +302,11 @@ GameObject:
   m_Component:
   - component: {fileID: 6837406112520964976}
   - component: {fileID: 6837406112520964879}
-  - component: {fileID: 6837406112520964878}
+  - component: {fileID: 4986621526707421884}
+  - component: {fileID: 7541360519509823561}
   - component: {fileID: 6837406112520964877}
   m_Layer: 0
-  m_Name: Domino_0
+  m_Name: Domino
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -319,7 +320,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6837406112520964876}
   m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: 6, y: -3.5, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -381,7 +382,27 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &6837406112520964878
+--- !u!95 &4986621526707421884
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6837406112520964876}
+  m_Enabled: 0
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: d73ad024eaf613f4b8caf89f2cf62c86, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+--- !u!114 &7541360519509823561
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -393,10 +414,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d99e4f34fff1ec544b2dd91fa87a8f3d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  num1: 9
-  num2: 9
   targetPos: {x: 0, y: 0, z: 0}
-  accel: 0
+  accel: 5
+  move: 1
 --- !u!114 &6837406112520964877
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -450,7 +470,9 @@ MonoBehaviour:
     dots: 010101010001010101
   - dotColor: {r: 0.6392157, g: 0.15686275, b: 0.34509805, a: 1}
     dots: 010101010101010101
-  isInDeck: 0
+  isInQueue: 0
+  leftNum: 0
+  rightNum: 0
 --- !u!1 &6837406112574690122
 GameObject:
   m_ObjectHideFlags: 0
