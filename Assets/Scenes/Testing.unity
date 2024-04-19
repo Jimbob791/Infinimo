@@ -473,7 +473,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
   m_AnchoredPosition: {x: 0, y: -30}
-  m_SizeDelta: {x: 650, y: 130}
+  m_SizeDelta: {x: 450, y: 130}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &873895877
 MonoBehaviour:
@@ -513,6 +513,37 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 873895875}
   m_CullTransparentMesh: 1
+--- !u!1 &1002222880
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1002222881}
+  m_Layer: 0
+  m_Name: DominoLine
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1002222881
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1002222880}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 9
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1378262275
 GameObject:
   m_ObjectHideFlags: 0
@@ -523,7 +554,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1378262276}
   m_Layer: 0
-  m_Name: Dominoes
+  m_Name: QueueDominoes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -537,7 +568,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1378262275}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 6, y: -3.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -554,6 +585,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1457921513}
   - component: {fileID: 1457921514}
+  - component: {fileID: 1457921515}
   m_Layer: 0
   m_Name: DominoManager
   m_TagString: Untagged
@@ -588,8 +620,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: daeb25a14e4126345bb016c92b3a0722, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playMulti: 1
   dominoPrefab: {fileID: 6837406112520964876, guid: 73777cf6a197159468523b80cd8ccae9, type: 3}
-  dominoParent: {fileID: 1378262275}
+  queueParent: {fileID: 1378262275}
+  lineParent: {fileID: 1002222880}
+--- !u!114 &1457921515
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1457921511}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 567b8ff2c9ac1534296aef471012d88a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  score: 0
+  scoreText: {fileID: 1700638155}
+  scoreDisplay: {fileID: 2595795683136182849, guid: a1ab3d3c3f0322f48b14549e9395d8a6, type: 3}
+  canvasParent: {fileID: 53645677}
 --- !u!1 &1524889675
 GameObject:
   m_ObjectHideFlags: 0
@@ -737,7 +787,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: -12}
-  m_SizeDelta: {x: 600, y: 80}
+  m_SizeDelta: {x: 450, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1700638155
 MonoBehaviour:
@@ -759,7 +809,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 10,993,922
+  m_text: 0
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 130acc57053059541b643935df2fe7c7, type: 2}
   m_sharedMaterial: {fileID: -7312992715623402806, guid: 130acc57053059541b643935df2fe7c7, type: 2}

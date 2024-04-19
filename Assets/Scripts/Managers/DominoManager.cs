@@ -4,13 +4,16 @@ using UnityEngine;
 
 public class DominoManager : MonoBehaviour
 {
+    public float playMulti = 1;
+
     [SerializeField] GameObject dominoPrefab;
-    [SerializeField] GameObject dominoParent;
+    [SerializeField] GameObject queueParent;
+    [SerializeField] GameObject lineParent;
 
     List<Domino> deck = new List<Domino>();
 
     List<Domino> queue = new List<Domino>();
-    List<Domino> played = new List<Domino>();
+    List<Domino> line = new List<Domino>();
 
     int deckSize;
 
@@ -32,11 +35,15 @@ public class DominoManager : MonoBehaviour
         {
             if (queue.Count == 0)
             {
-                for (int i = played.Count - 1; i > -1; i--)
+                for (int i = line.Count - 1; i > -1; i--)
                 {
-                    queue.Add(played[i]);
-                    played.RemoveAt(i);
+                    queue.Add(line[i]);
+                    line.RemoveAt(i);
                     ShuffleQueue();
+                    foreach (Domino domino in queue)
+                    {
+                        domino.obj.transform.SetParent(queueParent.transform);
+                    }
                 }
 
                 return;
@@ -52,15 +59,20 @@ public class DominoManager : MonoBehaviour
 
     IEnumerator MoveActiveDomino()
     {
-        played.Insert(0, activeDomino);
+        line.Insert(0, activeDomino);
         GameObject dominoObj = activeDomino.obj;
-        dominoObj.transform.position = new Vector3(6, -3.5f, 0);
         dominoObj.GetComponent<Animator>().enabled = true;
 
-        yield return new WaitForSeconds(2);
+        dominoObj.GetComponent<Animator>().speed = playMulti;
+
+        yield return new WaitForSeconds(1 / playMulti);
+        dominoObj.transform.SetParent(lineParent.transform);
+        yield return new WaitForSeconds(1 / playMulti);
 
         dominoObj.GetComponent<Animator>().enabled = false;
         dominoObj.transform.position = Vector3.zero;
+        if (line.Count > 1)
+            GetComponent<DominoScore>().ScoreDominoes(line[0], line[1]);
 
         activeDomino.obj.GetComponent<DominoController>().move = true;
         activeDomino = null;
@@ -72,14 +84,14 @@ public class DominoManager : MonoBehaviour
         for (int i = 0; i < queue.Count; i++)
         {
             Domino domino = queue[i];
-            domino.obj.GetComponent<DominoController>().targetPos = new Vector3(6, -3.5f - (0.25f * i), 0);
+            domino.obj.GetComponent<DominoController>().targetPos = new Vector3(0, -0.25f * i, 0);
 
             domino.obj.GetComponent<DominoRenderer>().isInQueue = i == 0 ? false : true;
         }
 
-        for (int i = 0; i < played.Count; i++)
+        for (int i = 0; i < line.Count; i++)
         {
-            Domino domino = played[i];
+            Domino domino = line[i];
             domino.obj.GetComponent<DominoController>().targetPos = new Vector3(-2.25f * i, 0, 0);
 
             domino.obj.GetComponent<DominoRenderer>().isInQueue = false;
@@ -97,7 +109,7 @@ public class DominoManager : MonoBehaviour
 
                 newDomino.leftNum = i;
                 newDomino.rightNum = k;
-                newDomino.obj = Instantiate(dominoPrefab, dominoParent.transform);
+                newDomino.obj = Instantiate(dominoPrefab, queueParent.transform);
 
                 deck.Add(newDomino);
                 count++;

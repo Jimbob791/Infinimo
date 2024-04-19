@@ -12,6 +12,6 @@ public class DominoController : MonoBehaviour
     private void Update()
     {
         if (move)
-            transform.position = Vector3.Lerp(transform.position, targetPos, accel * Time.deltaTime);
+            transform.localPosition = Vector3.Lerp(transform.localPosition, targetPos, accel * Time.deltaTime);
     }
 }
