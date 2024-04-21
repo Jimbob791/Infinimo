@@ -62,18 +62,27 @@ public class DominoManager : MonoBehaviour
         line.Insert(0, activeDomino);
         GameObject dominoObj = activeDomino.obj;
         dominoObj.GetComponent<Animator>().enabled = true;
-
+        dominoObj.GetComponent<Animator>().Play("Base Layer.DominoExit");
         dominoObj.GetComponent<Animator>().speed = playMulti;
+        bool dominoMatch = false;
+        if (line.Count > 1)
+            dominoMatch = GetComponent<DominoScore>().CheckMatch(line[0], line[1]);
+        dominoObj.GetComponent<Animator>().SetBool("scored", dominoMatch);
 
         yield return new WaitForSeconds(1 / playMulti);
         dominoObj.transform.SetParent(lineParent.transform);
         yield return new WaitForSeconds(1 / playMulti);
-
-        dominoObj.GetComponent<Animator>().enabled = false;
-        dominoObj.transform.position = Vector3.zero;
-        if (line.Count > 1)
+        
+        if (!dominoMatch)
+            dominoObj.GetComponent<Animator>().enabled = false;
+        else
+        {
             GetComponent<DominoScore>().ScoreDominoes(line[0], line[1]);
+            yield return new WaitForSeconds(1.5f);
+            dominoObj.GetComponent<Animator>().enabled = false;
+        }
 
+        dominoObj.transform.position = Vector3.zero;
         activeDomino.obj.GetComponent<DominoController>().move = true;
         activeDomino = null;
         active = false;

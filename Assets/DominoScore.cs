@@ -2,16 +2,31 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using System;
 
 public class DominoScore : MonoBehaviour
 {
-    public int score;
+    public double score;
     public TextMeshProUGUI scoreText;
     [SerializeField] GameObject scoreDisplay;
     [SerializeField] GameObject canvasParent;
 
-    float currentScore;
+    List<SuffixInfo> numberInfo = new List<SuffixInfo>();
+
+    double currentScore;
     bool updateScore = true;
+
+    private void Start()
+    {
+        numberInfo.Add(new SuffixInfo(24, "Sp"));
+        numberInfo.Add(new SuffixInfo(21, "Sx"));
+        numberInfo.Add(new SuffixInfo(18, "Qi"));
+        numberInfo.Add(new SuffixInfo(15, "Qa"));
+        numberInfo.Add(new SuffixInfo(12, "T"));
+        numberInfo.Add(new SuffixInfo(9, "B"));
+        numberInfo.Add(new SuffixInfo(6, "M"));
+        numberInfo.Add(new SuffixInfo(3, "K"));
+    }
 
     private void FixedUpdate()
     {
@@ -20,24 +35,26 @@ public class DominoScore : MonoBehaviour
     
     public void ScoreDominoes(Domino played, Domino active)
     {
-        if (active.rightNum == played.leftNum) // MATCH!!!!
+        float multi = 1;
+        double scoreToAdd = played.leftNum + played.rightNum;
+        if (played.leftNum == played.rightNum)
         {
-            float multi = 1;
-            int scoreToAdd = played.leftNum + played.rightNum;
-            if (played.leftNum == played.rightNum)
-            {
-                multi = 2;
-            }
-            score += Mathf.RoundToInt(scoreToAdd * multi);
-
-            GameObject display = Instantiate(scoreDisplay, new Vector3(Screen.width / 2, Screen.height / 2 + 200, 0), Quaternion.identity, canvasParent.transform);
-            ScoreDisplay displayScript = display.GetComponent<ScoreDisplay>();
-            displayScript.leftPoints = played.leftNum;
-            displayScript.rightPoints = played.rightNum;
-            displayScript.scoreMultiplier = multi;
-
-            StartCoroutine(PauseScoreUpdate());
+            multi = 2;
         }
+        score += scoreToAdd * multi;
+
+        GameObject display = Instantiate(scoreDisplay, new Vector3(Screen.width / 2, Screen.height / 2 + 200, 0), Quaternion.identity, canvasParent.transform);
+        ScoreDisplay displayScript = display.GetComponent<ScoreDisplay>();
+        displayScript.leftPoints = played.leftNum;
+        displayScript.rightPoints = played.rightNum;
+        displayScript.scoreMultiplier = multi;
+
+        StartCoroutine(PauseScoreUpdate());
+    }
+
+    public bool CheckMatch(Domino played, Domino active)
+    {
+        return active.rightNum == played.leftNum;
     }
 
     private IEnumerator PauseScoreUpdate()
@@ -58,18 +75,30 @@ public class DominoScore : MonoBehaviour
         {
             currentScore = score;
         }
-        float scoreToAdd = (score - currentScore) / 30;
+        double scoreToAdd = (score - currentScore) / 30;
         currentScore += scoreToAdd;
-        scoreText.text = FormatLargeNumber(Mathf.RoundToInt(currentScore));
+        scoreText.text = FormatLargeNumber(currentScore);
     }
 
-    private string FormatLargeNumber(int num)
+    private string FormatLargeNumber(double num)
     {
-        if (num >= 1000.0f) return (num/1000.0f).ToString("F3")+ "K";
-        if (num >= 1000000.0f) return (num/1000000.0f).ToString("F3") + "M";
-        if (num >= 1000000000.0f) return (num/1000000000.0f).ToString("F3") + "B";
-        if (num >= 1000000000000.0f) return (num/1000000000000.0f).ToString("F3") + "T";
+        foreach (SuffixInfo info in numberInfo)
+        {
+            if (num > Mathf.Pow(10, info.power)) return (num / Mathf.Pow(10, info.power)).ToString("F3") + info.suffix;
+        }
 
-        return num.ToString();
+        return num.ToString().Split(".")[0];
+    }
+}
+
+public class SuffixInfo
+{
+    public int power;
+    public string suffix;
+
+    public SuffixInfo(int newPower, string newSuffix)
+    {
+        power = newPower;
+        suffix = newSuffix;
     }
 }
