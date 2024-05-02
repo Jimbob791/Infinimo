@@ -6,6 +6,8 @@ using System;
 
 public class DominoScore : MonoBehaviour
 {
+    public static DominoScore instance;
+
     public double score;
     public TextMeshProUGUI scoreText;
     [SerializeField] GameObject scoreDisplay;
@@ -15,6 +17,18 @@ public class DominoScore : MonoBehaviour
 
     double currentScore;
     bool updateScore = true;
+
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(this.gameObject);
+        }
+    }
 
     private void Start()
     {
@@ -33,20 +47,21 @@ public class DominoScore : MonoBehaviour
         UpdateScore();
     }
     
-    public void ScoreDominoes(Domino played, Domino active)
+    public void ScoreDominoes(Domino played, Domino active, Line line)
     {
-        float multi = 1;
-        double scoreToAdd = played.leftNum + played.rightNum;
+        float multi = line.multiplier * Mathf.Pow(8, line.index);
+        double scoreToAdd = played.leftNum + line.additive + played.rightNum + line.additive;
         if (played.leftNum == played.rightNum)
         {
-            multi = 2;
+            multi *= 2;
         }
         score += scoreToAdd * multi;
 
-        GameObject display = Instantiate(scoreDisplay, new Vector3(Screen.width / 2, Screen.height / 2 + 200, 0), Quaternion.identity, canvasParent.transform);
+        Vector3 linePos = GameObject.Find("MainCamera").GetComponent<Camera>().WorldToScreenPoint(line.lineObject.transform.position);
+        GameObject display = Instantiate(scoreDisplay, new Vector3(linePos.x + 400, linePos.y, 0), Quaternion.identity, canvasParent.transform);
         ScoreDisplay displayScript = display.GetComponent<ScoreDisplay>();
-        displayScript.leftPoints = played.leftNum;
-        displayScript.rightPoints = played.rightNum;
+        displayScript.leftPoints = played.leftNum + line.additive;
+        displayScript.rightPoints = played.rightNum + line.additive;
         displayScript.scoreMultiplier = multi;
 
         StartCoroutine(PauseScoreUpdate());
@@ -80,11 +95,11 @@ public class DominoScore : MonoBehaviour
         scoreText.text = FormatLargeNumber(currentScore);
     }
 
-    private string FormatLargeNumber(double num)
+    public string FormatLargeNumber(double num)
     {
         foreach (SuffixInfo info in numberInfo)
         {
-            if (num > Mathf.Pow(10, info.power)) return (num / Mathf.Pow(10, info.power)).ToString("F3") + info.suffix;
+            if (num > Mathf.Pow(10, info.power)) return (num / Mathf.Pow(10, info.power)).ToString("F2") + info.suffix;
         }
 
         return num.ToString().Split(".")[0];
