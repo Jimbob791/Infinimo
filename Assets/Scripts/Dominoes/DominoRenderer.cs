@@ -18,7 +18,6 @@ public class DominoRenderer : MonoBehaviour
 
     void Update()
     {
-
         SetDots(sprites1, numberInfo[leftNum]);
         SetDots(sprites2, numberInfo[rightNum]);
     }

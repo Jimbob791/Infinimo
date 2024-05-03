@@ -7,14 +7,70 @@ public class DeckShopGenerator : MonoBehaviour
 {
     [SerializeField] GameObject offerPrefab;
     [SerializeField] GameObject offerParent;
+    [SerializeField] TextMeshProUGUI reloadCostText;
 
     List<ShopOffer> offers = new List<ShopOffer>();
     List<GameObject> offerObjects = new List<GameObject>();
 
     public int lifetimePurchases = 0;
+    public int lifetimeReloads = 0;
 
-    public void GenerateNewOffers()
+    bool generating;
+    ShopOffer pressedOffer;
+
+    private void Start()
     {
+        GenerateNewOffers(true);
+        lifetimeReloads = 0;
+    }
+
+    public void AttemptBuy(GameObject pressedObj)
+    {
+        int index = 0;
+
+        for (int i = 0; i < offerObjects.Count; i++)
+        {
+            if (pressedObj == offerObjects[i])
+            {
+                pressedOffer = offers[i];
+                index = i;
+                break;
+            }
+        }
+
+        if (DominoScore.instance.score >= System.Math.Floor(GetOfferCost(pressedOffer)))
+        {
+            DominoScore.instance.score -= System.Math.Floor(GetOfferCost(pressedOffer));
+
+            lifetimePurchases += 1;
+            pressedObj.GetComponent<Animator>().SetBool("buy", true);
+
+            DominoManager.instance.AddDomino(pressedOffer.leftNum, pressedOffer.rightNum);
+
+            Destroy(pressedObj, 5f);
+        }
+    }
+
+    public void GenerateNewOffers(bool ignoreCost)
+    {        
+        if (generating)
+            return;
+
+        if (!ignoreCost)
+        {
+            double generateCost = System.Math.Floor(Mathf.Pow(1.8f, lifetimeReloads) * 81);
+
+            if (DominoScore.instance.score < System.Math.Floor(Mathf.Pow(1.8f, lifetimeReloads) * 81))
+                return;
+
+            DominoScore.instance.score -= System.Math.Floor(Mathf.Pow(1.8f, lifetimeReloads) * 81);
+        }
+
+        if (!ignoreCost)
+            lifetimeReloads += 1;
+        
+        reloadCostText.text = DominoScore.instance.FormatLargeNumber(System.Math.Floor(Mathf.Pow(1.8f, lifetimeReloads) * 81));
+
         offers = new List<ShopOffer>();
         for (int i = offerObjects.Count - 1; i >= 0; i--)
         {
@@ -22,15 +78,20 @@ public class DeckShopGenerator : MonoBehaviour
             offerObjects.RemoveAt(i);
         }
 
+        generating = true;
+        StartCoroutine(GenerateOffersDelay());
+    }
 
+    IEnumerator GenerateOffersDelay()
+    {
         for (int i = 0; i < 6; i++)
         {
             ShopOffer newOffer = new ShopOffer();
 
-            newOffer.leftNum = Mathf.FloorToInt(Mathf.Pow(Random.Range(0, 100), 2.5f) / 10000);
-            newOffer.rightNum = Mathf.FloorToInt(Mathf.Pow(Random.Range(0, 100), 2.5f) / 10000);
+            newOffer.leftNum = Mathf.FloorToInt(Mathf.Pow(Random.Range(0, 100), 2) / 1000);
+            newOffer.rightNum = Mathf.FloorToInt(Mathf.Pow(Random.Range(0, 100), 2) / 1000);
 
-            newOffer.cost = Mathf.Pow(1.8f, lifetimePurchases + 1) * (newOffer.leftNum + 1) * (newOffer.rightNum + 1);
+            newOffer.cost = GetOfferCost(newOffer);
             if (newOffer.leftNum == newOffer.rightNum)
             {
                 newOffer.cost = newOffer.cost * 2;
@@ -42,12 +103,23 @@ public class DeckShopGenerator : MonoBehaviour
 
             GameObject newObj = Instantiate(offerPrefab, new Vector3(-240 + (240 * (i % 3)), 100 - (200 * (Mathf.FloorToInt(i / 3))), 0), Quaternion.identity);
             newObj.transform.SetParent(offerParent.transform, false);
-            newObj.transform.GetChild(0).GetComponent<DominoUIRenderer>().leftNum = newOffer.leftNum;
-            newObj.transform.GetChild(0).GetComponent<DominoUIRenderer>().rightNum = newOffer.rightNum;
-            newObj.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = DominoScore.instance.FormatLargeNumber(newOffer.cost);
+            
+            OfferController newController = newObj.GetComponent<OfferController>();
+            newController.dominoObj.GetComponent<DominoUIRenderer>().leftNum = newOffer.leftNum;
+            newController.dominoObj.GetComponent<DominoUIRenderer>().rightNum = newOffer.rightNum;
+            newController.costText.GetComponent<TextMeshProUGUI>().text = DominoScore.instance.FormatLargeNumber(newOffer.cost);
 
             offerObjects.Add(newObj);
+
+            yield return new WaitForSeconds(0.15f);
         }
+
+        generating = false;
+    }
+
+    private double GetOfferCost(ShopOffer offer)
+    {
+        return System.Math.Pow(1.8f, lifetimePurchases + 1) * (offer.leftNum + 1) * (offer.rightNum + 1) / 4;
     }
 }
 

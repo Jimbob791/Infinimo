@@ -86,7 +86,7 @@ public class DominoScore : MonoBehaviour
             return;
         }
 
-        if (score - currentScore < 0.5f)
+        if (AbsDouble(score - currentScore) < 0.5f)
         {
             currentScore = score;
         }
@@ -103,6 +103,11 @@ public class DominoScore : MonoBehaviour
         }
 
         return num.ToString().Split(".")[0];
+    }
+
+    public double AbsDouble(double num)
+    {
+        return num < 0 ? -1 * num : num;
     }
 }
 

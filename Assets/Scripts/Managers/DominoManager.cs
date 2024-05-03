@@ -41,7 +41,7 @@ public class DominoManager : MonoBehaviour
 
     private void Start()
     {
-        deckSize = CreateDeck(3);
+        deckSize = CreateDeck(2);
         queue = deck;
         ShuffleQueue();
 
@@ -209,6 +209,20 @@ public class DominoManager : MonoBehaviour
             }
         }
         return count;
+    }
+
+    public void AddDomino(int leftNum, int rightNum)
+    {
+        Domino newDomino = new Domino();
+
+        newDomino.leftNum = leftNum;
+        newDomino.rightNum = rightNum;
+        newDomino.obj = Instantiate(dominoPrefab, queueParent.transform);
+
+        newDomino.obj.GetComponent<DominoRenderer>().leftNum = leftNum;
+        newDomino.obj.GetComponent<DominoRenderer>().rightNum = rightNum;
+
+        queue.Add(newDomino);
     }
 
     public void CreateLine()

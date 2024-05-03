@@ -712,7 +712,7 @@ MonoBehaviour:
       - m_Target: {fileID: 1382521369}
         m_TargetAssemblyTypeName: DeckShopGenerator, Assembly-CSharp
         m_MethodName: GenerateNewOffers
-        m_Mode: 1
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -2674,7 +2674,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   offerPrefab: {fileID: 1617684353292920153, guid: f316bc07feb29154f97268f9609a30e5, type: 3}
   offerParent: {fileID: 701032675}
+  reloadCostText: {fileID: 782425380}
   lifetimePurchases: 0
+  lifetimeReloads: 0
 --- !u!1 &1391813555
 GameObject:
   m_ObjectHideFlags: 0
