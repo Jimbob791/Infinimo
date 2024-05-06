@@ -7,11 +7,13 @@ public class HeaderButtons : MonoBehaviour
     bool upgradesOpen = false;
     bool shopOpen = false;
 
+    [SerializeField] Animator upgradesAnim;
     [SerializeField] Animator shopAnim;
 
     public void UpgradesPressed()
     {
-
+        upgradesOpen = !upgradesOpen;
+        upgradesAnim.SetBool("display", upgradesOpen);
     }
 
     public void ShopPressed()

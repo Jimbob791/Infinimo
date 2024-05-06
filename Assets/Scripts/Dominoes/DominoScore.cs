@@ -12,11 +12,17 @@ public class DominoScore : MonoBehaviour
     public TextMeshProUGUI scoreText;
     [SerializeField] GameObject scoreDisplay;
     [SerializeField] GameObject canvasParent;
+    [SerializeField] PrestigeUpgrade superMulti;
+    [SerializeField] PrestigeUpgrade superBonus;
 
     List<SuffixInfo> numberInfo = new List<SuffixInfo>();
 
     double currentScore;
     bool updateScore = true;
+
+    float multi;
+    double scoreToAdd;
+    double superMultiValue;
 
     private void Awake()
     {
@@ -49,20 +55,50 @@ public class DominoScore : MonoBehaviour
     
     public void ScoreDominoes(Domino played, Domino active, Line line)
     {
-        float multi = line.multiplier * Mathf.Pow(8, line.index);
-        double scoreToAdd = played.leftNum + line.additive + played.rightNum + line.additive;
+        Vector3 linePos;
+        GameObject display;
+        ScoreDisplay displayScript;
+
+        if (!CheckMatch(played, active))
+        {
+            scoreToAdd = Mathf.Pow(10, superBonus.level);
+            superMultiValue = Mathf.Pow(2, superMulti.level);
+            multi = 1;
+            if (scoreToAdd == 1)
+                return;
+
+            linePos = GameObject.Find("MainCamera").GetComponent<Camera>().WorldToScreenPoint(line.lineObject.transform.position);
+            display = Instantiate(scoreDisplay, new Vector3(linePos.x + 300, linePos.y, 0), Quaternion.identity, canvasParent.transform);
+            displayScript = display.GetComponent<ScoreDisplay>();
+            displayScript.match = false;
+            displayScript.leftPoints = 0;
+            displayScript.rightPoints = 0;
+            displayScript.scoreMultiplier = 1;
+            displayScript.superBonus = System.Math.Pow(10, superBonus.level);
+            displayScript.superMulti = System.Math.Pow(2, superMulti.level);
+
+            StartCoroutine(PauseScoreUpdate());
+            return;
+        }
+
+        superMultiValue = 1;
+        multi = GetMulti(line.multiplier, line);
+        scoreToAdd = played.leftNum + GetAdditive(line.additive, line) + played.rightNum + GetAdditive(line.additive, line) + Mathf.Pow(10, superBonus.level);
         if (played.leftNum == played.rightNum)
         {
             multi *= 2;
         }
-        score += scoreToAdd * multi;
+        superMultiValue = Mathf.Pow(2, superMulti.level);
 
-        Vector3 linePos = GameObject.Find("MainCamera").GetComponent<Camera>().WorldToScreenPoint(line.lineObject.transform.position);
-        GameObject display = Instantiate(scoreDisplay, new Vector3(linePos.x + 400, linePos.y, 0), Quaternion.identity, canvasParent.transform);
-        ScoreDisplay displayScript = display.GetComponent<ScoreDisplay>();
-        displayScript.leftPoints = played.leftNum + line.additive;
-        displayScript.rightPoints = played.rightNum + line.additive;
+        linePos = GameObject.Find("MainCamera").GetComponent<Camera>().WorldToScreenPoint(line.lineObject.transform.position);
+        display = Instantiate(scoreDisplay, new Vector3(linePos.x + 300, linePos.y, 0), Quaternion.identity, canvasParent.transform);
+        displayScript = display.GetComponent<ScoreDisplay>();
+        displayScript.match = true;
+        displayScript.leftPoints = played.leftNum + GetAdditive(line.additive, line);
+        displayScript.rightPoints = played.rightNum + GetAdditive(line.additive, line);
         displayScript.scoreMultiplier = multi;
+        displayScript.superBonus = System.Math.Pow(10, superBonus.level);
+        displayScript.superMulti = System.Math.Pow(2, superMulti.level);
 
         StartCoroutine(PauseScoreUpdate());
     }
@@ -74,9 +110,9 @@ public class DominoScore : MonoBehaviour
 
     private IEnumerator PauseScoreUpdate()
     {
-        updateScore = false;
         yield return new WaitForSeconds(1.2f);
-        updateScore = true;
+        score += scoreToAdd * multi * superMultiValue;
+        ChipManager.instance.AddProgress(scoreToAdd * multi * superMultiValue);
     }
 
     private void UpdateScore()
@@ -86,7 +122,7 @@ public class DominoScore : MonoBehaviour
             return;
         }
 
-        if (AbsDouble(score - currentScore) < 0.5f)
+        if (System.Math.Abs(score - currentScore) < 0.5f)
         {
             currentScore = score;
         }
@@ -105,9 +141,14 @@ public class DominoScore : MonoBehaviour
         return num.ToString().Split(".")[0];
     }
 
-    public double AbsDouble(double num)
+    public float GetMulti(int level, Line line)
     {
-        return num < 0 ? -1 * num : num;
+        return level * Mathf.Pow(4, line.index) * Mathf.Pow(2, line.prestige);
+    }
+
+    public int GetAdditive(int level, Line line)
+    {
+        return level + line.prestige;
     }
 }
 

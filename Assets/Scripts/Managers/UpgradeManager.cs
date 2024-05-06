@@ -7,9 +7,13 @@ public class UpgradeManager : MonoBehaviour
 {
     public static UpgradeManager instance;
 
+    [SerializeField] GameObject prestigePrefab;
     [SerializeField] TextMeshProUGUI upgradeTitle;
     [SerializeField] TextMeshProUGUI upgradeDescription;
     [SerializeField] TextMeshProUGUI upgradeCost;
+
+    [SerializeField] PrestigeUpgrade bonusDiscount;
+    [SerializeField] PrestigeUpgrade multiDiscount;
 
     double cost;
 
@@ -42,15 +46,30 @@ public class UpgradeManager : MonoBehaviour
         if (DominoScore.instance.score >= GetCost(upgrade, line))
         {
             DominoScore.instance.score -= GetCost(upgrade, line);
-            if (upgrade == "multi" && line.multiplier < 50)
+            if (upgrade == "multi" && line.multiplier < 50 * (line.prestige + 1))
             {
                 line.multiplier += 1;
                 Debug.Log("Line Multiplier Upgraded x" + line.multiplier);
             }
-            else if (upgrade == "add" && line.additive < 50)
+            else if (upgrade == "add" && line.additive < 50 * (line.prestige + 1))
             {
                 line.additive += 1;
                 Debug.Log("Line Additive Upgraded +" + line.additive);
+            }
+            else if (upgrade == "prestige")
+            {
+                line.additive = 0;
+                line.multiplier = 1;
+                line.prestige += 1;
+
+                GameObject newObj = Instantiate(prestigePrefab, new Vector3(1 + ((line.prestige - 1) * 0.3f), -0.15f, 0), Quaternion.identity);
+                newObj.transform.SetParent(line.lineObject.transform, false);
+                newObj.GetComponent<SpriteRenderer>().sortingOrder = -line.prestige;
+
+                Debug.Log("Line Prestiged " + line.prestige);
+
+                over = false;
+                DisplayUpgradeInfo("none", line);
             }
         }
     }
@@ -66,28 +85,28 @@ public class UpgradeManager : MonoBehaviour
 
         if (upgrade == "multi")
         {
-            if (line.multiplier == 50)
+            if (line.multiplier == 50 * (line.prestige + 1))
             {
                 upgradeTitle.text = "MULTIPLIER AT MAX LVL" + line.multiplier;
-                upgradeDescription.text = "x" + (line.multiplier * Mathf.Pow(8, line.index));
+                upgradeDescription.text = "x" + DominoScore.instance.GetMulti(line.multiplier, line);
             }
             else
             {
-                upgradeTitle.text = "UPGRADE MULTIPLIER";
-                upgradeDescription.text = "x" + (line.multiplier * Mathf.Pow(8, line.index)) + " => x" + ((line.multiplier + 1) * Mathf.Pow(8, line.index));
+                upgradeTitle.text = "UPGRADE MULTI LVL" + line.multiplier;
+                upgradeDescription.text = "x" + DominoScore.instance.GetMulti(line.multiplier, line) + " => x" + DominoScore.instance.GetMulti(line.multiplier + 1, line);
             }
         }
         else if (upgrade == "add")
         {
-            if (line.additive == 50)
+            if (line.additive == 50 * (line.prestige + 1))
             {
                 upgradeTitle.text = "BONUS AT MAX LVL" + line.additive;
-                upgradeDescription.text = "+" + line.additive;
+                upgradeDescription.text = "+" + DominoScore.instance.GetAdditive(line.additive, line);
             }
             else
             {
-                upgradeTitle.text = "UPGRADE BONUS";
-                upgradeDescription.text = "+" + line.additive + " => +" + (line.additive + 1);
+                upgradeTitle.text = "UPGRADE BONUS LVL" + line.additive;
+                upgradeDescription.text = "+" + DominoScore.instance.GetAdditive(line.additive, line) + " => +" + DominoScore.instance.GetAdditive(line.additive + 1, line);
             }
         }
         else if (upgrade == "newLine")
@@ -95,8 +114,13 @@ public class UpgradeManager : MonoBehaviour
             upgradeTitle.text = "BUY NEW LINE";
             upgradeDescription.text = "";
         }
+        else if (upgrade == "prestige")
+        {
+            upgradeTitle.text = "PRESTIGE LINE";
+            upgradeDescription.text = "NEW MAX LVL " + ((line.prestige + 2) * 50) + "  |  +1 BONUS  |  x2 MULTI";
+        }
 
-        upgradeCost.text = DominoScore.instance.FormatLargeNumber(GetCost(upgrade, line)) + " Dots";
+        upgradeCost.text = DominoScore.instance.FormatLargeNumber(GetCost(upgrade, line)) + " Pips";
     }
 
     public double GetCost(string upgrade, Line line)
@@ -105,16 +129,25 @@ public class UpgradeManager : MonoBehaviour
         if (upgrade == "multi")
         {
             cost = Mathf.Pow(10, line.index + 1) + Mathf.Pow(line.multiplier, line.index + 2);
+            cost *= (10f / (multiDiscount.level + 10f));
         }
         else if (upgrade == "add")
         {
             cost = Mathf.Pow(10, line.index) + Mathf.Pow(line.additive, line.index + 4);
+            cost *= (10f / (bonusDiscount.level + 10f));
         }
         else if (upgrade == "newLine")
         {
-            cost = Mathf.Pow(10, (line.index + 1) * 2 + 1);
+            cost = Mathf.Pow(10, line.index * 2 + 2);
+        }
+        else if (upgrade == "prestige")
+        {
+            for (int i = 0; i < 50 * (line.prestige + 1); i++)
+            {
+                cost += Mathf.Pow(10, line.index + 1) + Mathf.Pow(i, line.index + 2);
+            }
         }
 
-        return cost;
+        return System.Math.Floor(cost);
     }
 }

@@ -6,7 +6,7 @@ public class LineButtons : MonoBehaviour
 {
     public Line line;
 
-    [SerializeField] GameObject infoButton;
+    [SerializeField] GameObject prestigeButton;
     [SerializeField] GameObject multiButton;
     [SerializeField] GameObject upgradeButton;
 
@@ -14,11 +14,14 @@ public class LineButtons : MonoBehaviour
     {
         Vector3 linePos = GameObject.Find("MainCamera").GetComponent<Camera>().WorldToScreenPoint(line.lineObject.transform.position);
         transform.position = new Vector3(135, linePos.y, 0);
+
+        prestigeButton.SetActive(line.multiplier == 50 * (line.prestige + 1));
     }
 
-    public void ShowInfo()
+    public void UpgradePrestige()
     {
-        infoButton.GetComponent<Animator>().Play("Base Layer.InfoPress");
+        UpgradeManager.instance.AttemptBuy("prestige", line);
+        prestigeButton.GetComponent<Animator>().Play("Base Layer.InfoPress");
     }
 
     public void UpgradeAdditive()

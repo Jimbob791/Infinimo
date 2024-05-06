@@ -15,6 +15,8 @@ public class DeckShopGenerator : MonoBehaviour
     public int lifetimePurchases = 0;
     public int lifetimeReloads = 0;
 
+    [SerializeField] PrestigeUpgrade boneyardDiscount;
+
     bool generating;
     ShopOffer pressedOffer;
 
@@ -38,17 +40,17 @@ public class DeckShopGenerator : MonoBehaviour
             }
         }
 
-        if (DominoScore.instance.score >= System.Math.Floor(GetOfferCost(pressedOffer)))
-        {
-            DominoScore.instance.score -= System.Math.Floor(GetOfferCost(pressedOffer));
+        if (DominoScore.instance.score < System.Math.Floor(GetOfferCost(pressedOffer)))
+            return;
 
-            lifetimePurchases += 1;
-            pressedObj.GetComponent<Animator>().SetBool("buy", true);
+        DominoScore.instance.score -= System.Math.Floor(GetOfferCost(pressedOffer));
 
-            DominoManager.instance.AddDomino(pressedOffer.leftNum, pressedOffer.rightNum);
+        lifetimePurchases += 1;
+        pressedObj.GetComponent<Animator>().SetBool("buy", true);
 
-            Destroy(pressedObj, 5f);
-        }
+        DominoManager.instance.AddDomino(pressedOffer.leftNum, pressedOffer.rightNum);
+
+        Destroy(pressedObj, 5f);
     }
 
     public void GenerateNewOffers(bool ignoreCost)
@@ -98,6 +100,10 @@ public class DeckShopGenerator : MonoBehaviour
             }
 
             newOffer.cost = newOffer.cost * (Random.Range(90f, 110f) / 100f);
+            if (newOffer.cost < 1)
+            {
+                newOffer.cost = 1;
+            }
 
             offers.Add(newOffer);
 
@@ -119,7 +125,7 @@ public class DeckShopGenerator : MonoBehaviour
 
     private double GetOfferCost(ShopOffer offer)
     {
-        return System.Math.Pow(1.8f, lifetimePurchases + 1) * (offer.leftNum + 1) * (offer.rightNum + 1) / 4;
+        return (System.Math.Pow(1.8f, lifetimePurchases + 1) * (offer.leftNum + 1) * (offer.rightNum + 1) / 4) * (10f / (boneyardDiscount.level + 10f));
     }
 }
 

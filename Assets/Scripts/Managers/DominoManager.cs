@@ -16,6 +16,9 @@ public class DominoManager : MonoBehaviour
 
     [SerializeField] GameObject autoplayRing;
 
+    [SerializeField] PrestigeUpgrade autoplayUpgrade;
+    [SerializeField] PrestigeUpgrade scoreSpeed;
+
     List<Domino> deck = new List<Domino>();
 
     List<Domino> queue = new List<Domino>();
@@ -64,8 +67,8 @@ public class DominoManager : MonoBehaviour
         {
             AttemptPlay();
         }
-
-        if (timeSincePlayed >= autoplayTime && !active)
+        Debug.Log(autoplayTime * (10f / (autoplayUpgrade.level + 10f)));
+        if (timeSincePlayed >= autoplayTime * (10f / (autoplayUpgrade.level + 10f)) && !active)
         {
             AttemptPlay();
         }
@@ -140,9 +143,13 @@ public class DominoManager : MonoBehaviour
         yield return new WaitForSeconds(1 / playMulti);
         dominoObj.transform.SetParent(line.lineObject.transform);
         yield return new WaitForSeconds(1 / playMulti);
-        
+
         if (!dominoMatch)
+        {
             dominoObj.GetComponent<Animator>().enabled = false;
+            if (line.dominoes.Count > 1)
+                GetComponent<DominoScore>().ScoreDominoes(line.dominoes[0], line.dominoes[1], line);
+        }
         else
         {
             GetComponent<DominoScore>().ScoreDominoes(line.dominoes[0], line.dominoes[1], line);
@@ -188,7 +195,7 @@ public class DominoManager : MonoBehaviour
 
     private void UpdateRing()
     {
-        autoplayRing.GetComponent<RingController>().UpdateRing(autoplayTime, timeSincePlayed);
+        autoplayRing.GetComponent<RingController>().UpdateRing(autoplayTime * (10f / (autoplayUpgrade.level + 10f)), timeSincePlayed);
     }
 
     private int CreateDeck(int deckSize)
@@ -231,11 +238,12 @@ public class DominoManager : MonoBehaviour
         newLine.lineObject = Instantiate(linePrefab);
         newLine.multiplier = 1;
         newLine.additive = 0;
+        newLine.prestige = 0;
         newLine.index = lines.Count;
         lines.Add(newLine);
 
         GameObject newButtons = Instantiate(buttonsPrefab);
-        newButtons.transform.SetParent(GameObject.Find("MainCanvas").transform);
+        newButtons.transform.SetParent(GameObject.Find("TextCanvas").transform);
         newButtons.GetComponent<LineButtons>().line = newLine;
         UpdateLines();
     }
@@ -294,4 +302,5 @@ public class Line
     public GameObject lineObject;
     public int multiplier;
     public int additive;
+    public int prestige;
 }
