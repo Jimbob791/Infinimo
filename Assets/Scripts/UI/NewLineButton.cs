@@ -36,7 +36,7 @@ public class NewLineButton : MonoBehaviour
         {
             DominoScore.instance.score -= UpgradeManager.instance.GetCost("newLine", DominoManager.instance.lines[DominoManager.instance.lines.Count - 1]);
 
-            DominoManager.instance.CreateLine();
+            DominoManager.instance.CreateLine(DominoManager.instance.lines.Count, 1, 0, 0);
         }
     }
 }

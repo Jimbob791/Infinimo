@@ -14,6 +14,8 @@ public class PrestigeUpgrade : MonoBehaviour
     [SerializeField] TextMeshProUGUI levelText;
     [SerializeField] TextMeshProUGUI costText;
 
+    [SerializeField] PrestigeUpgrade prestigeDiscount;
+
     void Start()
     {
         cost = GetUpgradeCost(type);
@@ -62,12 +64,18 @@ public class PrestigeUpgrade : MonoBehaviour
             case UpgradeType.BonusDiscount:
                 cost = 6 + Mathf.Pow(2, level);
                 break;
+            case UpgradeType.ChipBonus:
+                cost = 5 + Mathf.Pow(2, level);
+                break;
+            case UpgradeType.PrestigeDiscount:
+                cost = 5 + Mathf.Pow(3, level);
+                break;
             default:
                 cost = 0;
                 break;
         }
         
-        return System.Math.Floor(cost);
+        return System.Math.Ceiling(cost * (10f / (prestigeDiscount.level + 10f)));
     }
 }
 
@@ -79,5 +87,7 @@ public enum UpgradeType
     AutoplaySpeed,
     BoneyardDiscount,
     UpgradeDiscount,
-    BonusDiscount
+    BonusDiscount,
+    ChipBonus,
+    PrestigeDiscount
 }

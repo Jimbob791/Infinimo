@@ -26,6 +26,18 @@ public class DeckShopGenerator : MonoBehaviour
         lifetimeReloads = 0;
     }
 
+    void Update()
+    {
+        for (int i = 0; i < offerObjects.Count; i++)
+        {
+            if (offerObjects[i] != null)
+            {
+                offers[i].cost = GetOfferCost(offers[i]);
+                offerObjects[i].GetComponent<OfferController>().costText.text = DominoScore.instance.FormatLargeNumber(offers[i].cost);
+            }
+        }
+    }
+
     public void AttemptBuy(GameObject pressedObj)
     {
         int index = 0;
@@ -113,7 +125,6 @@ public class DeckShopGenerator : MonoBehaviour
             OfferController newController = newObj.GetComponent<OfferController>();
             newController.dominoObj.GetComponent<DominoUIRenderer>().leftNum = newOffer.leftNum;
             newController.dominoObj.GetComponent<DominoUIRenderer>().rightNum = newOffer.rightNum;
-            newController.costText.GetComponent<TextMeshProUGUI>().text = DominoScore.instance.FormatLargeNumber(newOffer.cost);
 
             offerObjects.Add(newObj);
 
@@ -125,7 +136,8 @@ public class DeckShopGenerator : MonoBehaviour
 
     private double GetOfferCost(ShopOffer offer)
     {
-        return (System.Math.Pow(1.8f, lifetimePurchases + 1) * (offer.leftNum + 1) * (offer.rightNum + 1) / 4) * (10f / (boneyardDiscount.level + 10f));
+        double cost = (System.Math.Pow(1.8f, lifetimePurchases + 1) * (offer.leftNum + 1) * (offer.rightNum + 1) / 4) * (10f / (boneyardDiscount.level + 10f));
+        return System.Math.Ceiling(cost);
     }
 }
 

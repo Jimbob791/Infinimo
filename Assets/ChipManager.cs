@@ -15,10 +15,12 @@ public class ChipManager : MonoBehaviour
     [SerializeField] Slider largeProgressSlider;
     [SerializeField] Slider smallProgressSlider;
 
-    private double currentChips;
-    private double totalChips;
+    [SerializeField] PrestigeUpgrade chipBonus;
 
-    private double currentPips;
+    private double currentChips;
+    public double totalChips;
+
+    public double currentPips;
     private double neededPips;
 
     void Awake()
@@ -72,6 +74,6 @@ public class ChipManager : MonoBehaviour
 
     public void AddProgress(double pips)
     {
-        currentPips += pips;
+        currentPips += pips * Mathf.Pow(2, chipBonus.level);
     }
 }

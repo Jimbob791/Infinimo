@@ -19,9 +19,9 @@ public class DominoManager : MonoBehaviour
     [SerializeField] PrestigeUpgrade autoplayUpgrade;
     [SerializeField] PrestigeUpgrade scoreSpeed;
 
-    List<Domino> deck = new List<Domino>();
+    public List<Domino> deck = new List<Domino>();
 
-    List<Domino> queue = new List<Domino>();
+    public List<Domino> queue = new List<Domino>();
     [HideInInspector] public List<Line> lines = new List<Line>();
 
     int deckSize;
@@ -44,14 +44,18 @@ public class DominoManager : MonoBehaviour
 
     private void Start()
     {
-        deckSize = CreateDeck(2);
+        if (deck.Count == 0)
+        {
+            deckSize = CreateDeck(2);
+
+            for (int i = 0; i < 1; i++)
+            {
+                CreateLine(i, 1, 0, 0);
+            }
+        }
+
         queue = deck;
         ShuffleQueue();
-
-        for (int i = 0; i < 1; i++)
-        {
-            CreateLine();
-        }
     }
 
     private void Update()
@@ -67,7 +71,7 @@ public class DominoManager : MonoBehaviour
         {
             AttemptPlay();
         }
-        Debug.Log(autoplayTime * (10f / (autoplayUpgrade.level + 10f)));
+
         if (timeSincePlayed >= autoplayTime * (10f / (autoplayUpgrade.level + 10f)) && !active)
         {
             AttemptPlay();
@@ -230,16 +234,17 @@ public class DominoManager : MonoBehaviour
         newDomino.obj.GetComponent<DominoRenderer>().rightNum = rightNum;
 
         queue.Add(newDomino);
+        deck.Add(newDomino);
     }
 
-    public void CreateLine()
+    public void CreateLine(int index, int multiLevel, int bonusLevel, int prestigeLevel)
     {
         Line newLine = new Line();
         newLine.lineObject = Instantiate(linePrefab);
-        newLine.multiplier = 1;
-        newLine.additive = 0;
-        newLine.prestige = 0;
-        newLine.index = lines.Count;
+        newLine.multiplier = multiLevel;
+        newLine.additive = bonusLevel;
+        newLine.prestige = prestigeLevel;
+        newLine.index = index;
         lines.Add(newLine);
 
         GameObject newButtons = Instantiate(buttonsPrefab);

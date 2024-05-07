@@ -23,6 +23,7 @@ public class DominoScore : MonoBehaviour
     float multi;
     double scoreToAdd;
     double superMultiValue;
+    double superBonusValue;
 
     private void Awake()
     {
@@ -81,14 +82,14 @@ public class DominoScore : MonoBehaviour
             return;
         }
 
-        superMultiValue = 1;
+        superMultiValue = System.Math.Pow(2, superMulti.level);
+        superBonusValue = System.Math.Pow(10, superBonus.level);
         multi = GetMulti(line.multiplier, line);
-        scoreToAdd = played.leftNum + GetAdditive(line.additive, line) + played.rightNum + GetAdditive(line.additive, line) + Mathf.Pow(10, superBonus.level);
+        scoreToAdd = played.leftNum + GetAdditive(line.additive, line) + played.rightNum + GetAdditive(line.additive, line);
         if (played.leftNum == played.rightNum)
         {
             multi *= 2;
         }
-        superMultiValue = Mathf.Pow(2, superMulti.level);
 
         linePos = GameObject.Find("MainCamera").GetComponent<Camera>().WorldToScreenPoint(line.lineObject.transform.position);
         display = Instantiate(scoreDisplay, new Vector3(linePos.x + 300, linePos.y, 0), Quaternion.identity, canvasParent.transform);
