@@ -2,7 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using System;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class StatManager : MonoBehaviour
 {
@@ -17,6 +19,19 @@ public class StatManager : MonoBehaviour
     public DeckShopGenerator deckShopManager;
     public List<PrestigeUpgrade> upgrades = new List<PrestigeUpgrade>();
 
+    [Space]
+
+    [SerializeField] PrestigeUpgrade superMulti;
+    [SerializeField] PrestigeUpgrade superBonus;
+    [SerializeField] PrestigeUpgrade autoplayUpgrade;
+
+    [Space]
+
+    [SerializeField] TextMeshProUGUI offlineText;
+    [SerializeField] GameObject offlineEarningsParent;
+
+    [HideInInspector] public bool firstPlay;
+
     void Awake()
     {
         if (instance == null)
@@ -28,7 +43,19 @@ public class StatManager : MonoBehaviour
             Destroy(this.gameObject);
         }
 
-        LoadData();
+
+        firstPlay = !File.Exists(Application.persistentDataPath + "/saveData.json");
+
+        if (!firstPlay)
+            LoadData();
+    }
+
+    void Start()
+    {
+        if (firstPlay)
+        {
+            offlineEarningsParent.SetActive(false);
+        }
     }
 
     void Update()
@@ -41,40 +68,7 @@ public class StatManager : MonoBehaviour
 
     void WipeData()
     {
-        SaveData saveData = new SaveData();
-
-        saveData.pipsPower = 0;
-        saveData.pipsBase = 0;
-
-        saveData.chipsPower = 0;
-        saveData.chipsBase = 0;
-        saveData.totalChipsPower = 0;
-        saveData.totalChipsBase = 0;
-
-        saveData.progressPower = 0;
-        saveData.progressBase = 0;
-
-        saveData.numBoughtDominoes = 0;
-        saveData.numReloads = 0;
-
-        for (int i = 0; i < upgrades.Count; i++)
-        {
-            UpgradeData newData = new UpgradeData();
-
-            newData.level = 0;
-            newData.upgradeType = GetUpgradeString(upgrades[i].type);
-
-            saveData.upgradeData.Add(newData);
-        }
-
-
-        saveData.lineData = new List<LineData>();
-
-        dominoManager.deck = new List<Domino>();
-        saveData.dominoData = new List<DominoData>();
-
-        string dataString = JsonUtility.ToJson(saveData);
-        File.WriteAllText(Application.persistentDataPath + "/saveData.json", dataString);
+        File.Delete(Application.persistentDataPath + "/saveData.json");
 
         Debug.Log("Data Successfully Wiped");
 
@@ -109,6 +103,9 @@ public class StatManager : MonoBehaviour
         {
             dominoManager.AddDomino(data.leftNum, data.rightNum);
         }
+
+        DateTime lastTime = new DateTime(loadData.timeData.year, loadData.timeData.month, loadData.timeData.day, loadData.timeData.hour, loadData.timeData.minute, loadData.timeData.second);
+        CalculateOfflineEarnings(lastTime);
 
         Debug.Log("Data Successfully Loaded");
     }
@@ -162,6 +159,15 @@ public class StatManager : MonoBehaviour
 
             saveData.dominoData.Add(newData);
         }
+
+        DateTime currentTime = DateTime.Now;
+        saveData.timeData = new TimeData();
+        saveData.timeData.year = currentTime.Year;
+        saveData.timeData.month = currentTime.Month;
+        saveData.timeData.day = currentTime.Day;
+        saveData.timeData.hour = currentTime.Hour;
+        saveData.timeData.minute = currentTime.Minute;
+        saveData.timeData.second = currentTime.Second;
 
         string dataString = JsonUtility.ToJson(saveData);
         File.WriteAllText(Application.persistentDataPath + "/saveData.json", dataString);
@@ -229,6 +235,45 @@ public class StatManager : MonoBehaviour
                 return UpgradeType.SuperMulti;
         }
     }
+
+    private void CalculateOfflineEarnings(DateTime lastTime)
+    {
+        TimeSpan difference = DateTime.Now - lastTime;
+        double totalSeconds = difference.TotalSeconds;
+
+        float deckTotal = 0;
+        foreach (Domino domino in dominoManager.deck)
+        {
+            deckTotal += domino.leftNum + domino.rightNum;
+        }
+        double deckAverage = deckTotal / dominoManager.deck.Count;
+
+        double multiTotal = 1;
+        foreach (Line line in dominoManager.lines)
+        {
+            multiTotal += line.multiplier * Mathf.Pow(4, line.index) * Mathf.Pow(2, line.prestige);
+        }
+        double multiAverage = multiTotal / dominoManager.lines.Count;
+
+        double bonusTotal = 0;
+        foreach (Line line in dominoManager.lines)
+        {
+            bonusTotal += line.additive + line.prestige;
+        }
+        double bonusAverage = bonusTotal / dominoManager.lines.Count;
+
+        double averageBaseScore = (deckAverage + bonusAverage) * multiAverage;
+        double superBonusValue = Math.Pow(10, superBonus.level);
+        double superMultiValue = Math.Pow(2, superMulti.level);
+        double averageTotalScore = (averageBaseScore + superBonusValue) * superMultiValue;
+
+        double scorePerSecond = averageTotalScore / (dominoManager.autoplayTime * (10f / (autoplayUpgrade.level + 10f)));
+        double totalOfflineEarnings = scorePerSecond * totalSeconds * 0.2f;
+        dominoScore.score += totalOfflineEarnings;
+        chipManager.AddProgress(totalOfflineEarnings);
+
+        offlineText.text = dominoScore.FormatLargeNumber(totalOfflineEarnings);
+    }
 }
 
 [System.Serializable]
@@ -250,6 +295,19 @@ public class SaveData
     public List<UpgradeData> upgradeData = new List<UpgradeData>();
     public List<LineData> lineData = new List<LineData>();
     public List<DominoData> dominoData = new List<DominoData>();
+
+    public TimeData timeData;
+}
+
+[System.Serializable]
+public class TimeData
+{
+    public int year;
+    public int month;
+    public int day;
+    public int hour;
+    public int minute;
+    public int second;
 }
 
 [System.Serializable]

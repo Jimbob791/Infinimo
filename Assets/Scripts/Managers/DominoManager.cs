@@ -141,12 +141,16 @@ public class DominoManager : MonoBehaviour
         dominoObj.GetComponent<Animator>().speed = playMulti;
         bool dominoMatch = false;
         if (line.dominoes.Count > 1)
+        {
             dominoMatch = GetComponent<DominoScore>().CheckMatch(line.dominoes[0], line.dominoes[1]);
+        }
         dominoObj.GetComponent<Animator>().SetBool("scored", dominoMatch);
 
         yield return new WaitForSeconds(1 / playMulti);
         dominoObj.transform.SetParent(line.lineObject.transform);
         yield return new WaitForSeconds(1 / playMulti);
+
+        TutorialController.instance.playedDomino = true;
 
         if (!dominoMatch)
         {
@@ -158,6 +162,7 @@ public class DominoManager : MonoBehaviour
         {
             GetComponent<DominoScore>().ScoreDominoes(line.dominoes[0], line.dominoes[1], line);
             yield return new WaitForSeconds(1.5f);
+            TutorialController.instance.dominoMatched = true;
             dominoObj.GetComponent<Animator>().enabled = false;
         }
 

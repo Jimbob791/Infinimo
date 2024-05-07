@@ -37,18 +37,6 @@ public class DominoScore : MonoBehaviour
         }
     }
 
-    private void Start()
-    {
-        numberInfo.Add(new SuffixInfo(24, "Sp"));
-        numberInfo.Add(new SuffixInfo(21, "Sx"));
-        numberInfo.Add(new SuffixInfo(18, "Qi"));
-        numberInfo.Add(new SuffixInfo(15, "Qa"));
-        numberInfo.Add(new SuffixInfo(12, "T"));
-        numberInfo.Add(new SuffixInfo(9, "B"));
-        numberInfo.Add(new SuffixInfo(6, "M"));
-        numberInfo.Add(new SuffixInfo(3, "K"));
-    }
-
     private void FixedUpdate()
     {
         UpdateScore();
@@ -62,10 +50,11 @@ public class DominoScore : MonoBehaviour
 
         if (!CheckMatch(played, active))
         {
-            scoreToAdd = Mathf.Pow(10, superBonus.level);
+            superBonusValue = Mathf.Pow(10, superBonus.level);
             superMultiValue = Mathf.Pow(2, superMulti.level);
             multi = 1;
-            if (scoreToAdd == 1)
+            scoreToAdd = 0;
+            if (superBonusValue == 1)
                 return;
 
             linePos = GameObject.Find("MainCamera").GetComponent<Camera>().WorldToScreenPoint(line.lineObject.transform.position);
@@ -78,7 +67,7 @@ public class DominoScore : MonoBehaviour
             displayScript.superBonus = System.Math.Pow(10, superBonus.level);
             displayScript.superMulti = System.Math.Pow(2, superMulti.level);
 
-            StartCoroutine(PauseScoreUpdate());
+            StartCoroutine(PauseScoreUpdate(scoreToAdd, multi, superBonusValue, superMultiValue));
             return;
         }
 
@@ -101,7 +90,7 @@ public class DominoScore : MonoBehaviour
         displayScript.superBonus = System.Math.Pow(10, superBonus.level);
         displayScript.superMulti = System.Math.Pow(2, superMulti.level);
 
-        StartCoroutine(PauseScoreUpdate());
+        StartCoroutine(PauseScoreUpdate(scoreToAdd, multi, superBonusValue, superMultiValue));
     }
 
     public bool CheckMatch(Domino played, Domino active)
@@ -109,11 +98,11 @@ public class DominoScore : MonoBehaviour
         return active.rightNum == played.leftNum;
     }
 
-    private IEnumerator PauseScoreUpdate()
+    private IEnumerator PauseScoreUpdate(double bonus, double multi, double superBonus, double superMulti)
     {
         yield return new WaitForSeconds(1.2f);
-        score += scoreToAdd * multi * superMultiValue;
-        ChipManager.instance.AddProgress(scoreToAdd * multi * superMultiValue);
+        score += (bonus * multi + superBonus) * superMulti;
+        ChipManager.instance.AddProgress((bonus * multi + superBonus) * superMulti);
     }
 
     private void UpdateScore()
@@ -134,6 +123,19 @@ public class DominoScore : MonoBehaviour
 
     public string FormatLargeNumber(double num)
     {
+        if (numberInfo.Count == 0)
+        {
+            numberInfo.Add(new SuffixInfo(27, "Oc"));
+            numberInfo.Add(new SuffixInfo(24, "Sp"));
+            numberInfo.Add(new SuffixInfo(21, "Sx"));
+            numberInfo.Add(new SuffixInfo(18, "Qi"));
+            numberInfo.Add(new SuffixInfo(15, "Qa"));
+            numberInfo.Add(new SuffixInfo(12, "T"));
+            numberInfo.Add(new SuffixInfo(9, "B"));
+            numberInfo.Add(new SuffixInfo(6, "M"));
+            numberInfo.Add(new SuffixInfo(3, "K"));
+        }
+
         foreach (SuffixInfo info in numberInfo)
         {
             if (num > Mathf.Pow(10, info.power)) return (num / Mathf.Pow(10, info.power)).ToString("F2") + info.suffix;
