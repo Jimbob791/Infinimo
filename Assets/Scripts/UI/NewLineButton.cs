@@ -32,9 +32,11 @@ public class NewLineButton : MonoBehaviour
 
     public void BuyNewLine()
     {
-        if (UpgradeManager.instance.GetCost("newLine", DominoManager.instance.lines[DominoManager.instance.lines.Count - 1]) <= DominoScore.instance.score)
+        Line line = DominoManager.instance.lines[DominoManager.instance.lines.Count - 1];
+        double cost = UpgradeManager.instance.GetCost("newLine", line.index, line.multiplier, line.additive, line.prestige);
+        if (cost <= DominoScore.instance.score)
         {
-            DominoScore.instance.score -= UpgradeManager.instance.GetCost("newLine", DominoManager.instance.lines[DominoManager.instance.lines.Count - 1]);
+            DominoScore.instance.score -= cost;
 
             DominoManager.instance.CreateLine(DominoManager.instance.lines.Count, 1, 0, 0);
         }

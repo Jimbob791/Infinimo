@@ -24,6 +24,7 @@ public class StatManager : MonoBehaviour
     [SerializeField] PrestigeUpgrade superMulti;
     [SerializeField] PrestigeUpgrade superBonus;
     [SerializeField] PrestigeUpgrade autoplayUpgrade;
+    [SerializeField] PrestigeUpgrade chipMulti;
 
     [Space]
 
@@ -56,12 +57,14 @@ public class StatManager : MonoBehaviour
         {
             offlineEarningsParent.SetActive(false);
         }
+        else
+        {
+            SaveData();
+        }
     }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.S))
-            SaveData();
         if (Input.GetKeyDown(KeyCode.R))
             WipeData();
     }
@@ -79,10 +82,10 @@ public class StatManager : MonoBehaviour
     {
         SaveData loadData = JsonUtility.FromJson<SaveData>(File.ReadAllText(Application.persistentDataPath + "/saveData.json"));
 
-        dominoScore.score = loadData.pipsBase * System.Math.Pow(10, loadData.pipsPower);
-        chipManager.chips = loadData.chipsBase * System.Math.Pow(10, loadData.chipsPower);
-        chipManager.totalChips = loadData.totalChipsBase * System.Math.Pow(10, loadData.totalChipsPower);
-        chipManager.currentPips = loadData.progressBase * System.Math.Pow(10, loadData.progressPower);
+        dominoScore.score = Math.Ceiling(loadData.pipsBase * System.Math.Pow(10, loadData.pipsPower));
+        chipManager.chips = Math.Ceiling(loadData.chipsBase * System.Math.Pow(10, loadData.chipsPower));
+        chipManager.totalChips = Math.Ceiling(loadData.totalChipsBase * System.Math.Pow(10, loadData.totalChipsPower));
+        chipManager.currentPips = Math.Ceiling(loadData.progressBase * System.Math.Pow(10, loadData.progressPower));
 
         deckShopManager.lifetimePurchases = loadData.numBoughtDominoes;
         deckShopManager.lifetimeReloads = loadData.numReloads;
@@ -98,19 +101,27 @@ public class StatManager : MonoBehaviour
             dominoManager.CreateLine(data.index, data.multiLevel, data.bonusLevel, data.prestige);
         }
 
+        foreach (Line line in dominoManager.lines)
+        {
+            for (int i = 0; i < line.prestige; i++)
+            {
+                upgradeManager.AddPrestigeIcon(line, i + 1);
+            }
+        }
+
         dominoManager.deck = new List<Domino>();
         foreach (DominoData data in loadData.dominoData)
         {
             dominoManager.AddDomino(data.leftNum, data.rightNum);
         }
-
+        
         DateTime lastTime = new DateTime(loadData.timeData.year, loadData.timeData.month, loadData.timeData.day, loadData.timeData.hour, loadData.timeData.minute, loadData.timeData.second);
         CalculateOfflineEarnings(lastTime);
 
         Debug.Log("Data Successfully Loaded");
     }
 
-    void SaveData()
+    public void SaveData()
     {
         SaveData saveData = new SaveData();
 
@@ -269,10 +280,10 @@ public class StatManager : MonoBehaviour
 
         double scorePerSecond = averageTotalScore / (dominoManager.autoplayTime * (10f / (autoplayUpgrade.level + 10f)));
         double totalOfflineEarnings = scorePerSecond * totalSeconds * 0.2f;
-        dominoScore.score += totalOfflineEarnings;
-        chipManager.AddProgress(totalOfflineEarnings);
+        dominoScore.score += Math.Ceiling(totalOfflineEarnings);
+        chipManager.AddProgress(Math.Ceiling(totalOfflineEarnings * Mathf.Pow(2, chipMulti.level)));
 
-        offlineText.text = dominoScore.FormatLargeNumber(totalOfflineEarnings);
+        offlineText.text = dominoScore.FormatLargeNumber(Math.Ceiling(totalOfflineEarnings));
     }
 }
 

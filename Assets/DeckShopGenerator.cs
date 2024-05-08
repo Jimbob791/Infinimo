@@ -62,6 +62,8 @@ public class DeckShopGenerator : MonoBehaviour
 
         DominoManager.instance.AddDomino(pressedOffer.leftNum, pressedOffer.rightNum);
 
+        StatManager.instance.SaveData();
+
         Destroy(pressedObj, 5f);
     }
 

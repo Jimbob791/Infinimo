@@ -138,7 +138,7 @@ public class DominoScore : MonoBehaviour
 
         foreach (SuffixInfo info in numberInfo)
         {
-            if (num > Mathf.Pow(10, info.power)) return (num / Mathf.Pow(10, info.power)).ToString("F2") + info.suffix;
+            if (num >= Mathf.Pow(10, info.power)) return (num / Mathf.Pow(10, info.power)).ToString("F2") + info.suffix;
         }
 
         return num.ToString().Split(".")[0];

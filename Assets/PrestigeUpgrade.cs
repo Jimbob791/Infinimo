@@ -36,6 +36,7 @@ public class PrestigeUpgrade : MonoBehaviour
         ChipManager.instance.chips -= tempCost;
         level += 1;
         cost = GetUpgradeCost(type);
+        StatManager.instance.SaveData();
     }
 
     private double GetUpgradeCost(UpgradeType type)
@@ -50,25 +51,25 @@ public class PrestigeUpgrade : MonoBehaviour
                 cost = 4 + Mathf.Pow(level, 2.5f);
                 break;
             case UpgradeType.ScoreSpeed:
-                cost = 2 + Mathf.Pow(5, level + 1);
+                cost = 2 + Mathf.Pow(3, level + 1);
                 break;
             case UpgradeType.AutoplaySpeed:
-                cost = 5 + Mathf.Pow(3, level + 1);
+                cost = 4 + Mathf.Pow(2, level + 1);
                 break;
             case UpgradeType.BoneyardDiscount:
-                cost = 2 * Mathf.Pow(level + 1, 3);
+                cost = 2 * Mathf.Pow(level + 1, 2);
                 break;
             case UpgradeType.UpgradeDiscount:
-                cost = 4 + Mathf.Pow(1.5f, level);
+                cost = 1 + Mathf.Pow(1.5f, level);
                 break;
             case UpgradeType.BonusDiscount:
-                cost = 6 + Mathf.Pow(2, level);
+                cost = 2 + Mathf.Pow(2, level);
                 break;
             case UpgradeType.ChipBonus:
-                cost = 5 + Mathf.Pow(2, level);
+                cost = 4 + Mathf.Pow(4, level);
                 break;
             case UpgradeType.PrestigeDiscount:
-                cost = 5 + Mathf.Pow(3, level);
+                cost = 2 + Mathf.Pow(3, level);
                 break;
             default:
                 cost = 0;
