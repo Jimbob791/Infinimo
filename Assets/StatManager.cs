@@ -193,7 +193,7 @@ public class StatManager : MonoBehaviour
         return power;
     }
 
-    private string GetUpgradeString(UpgradeType type)
+    public string GetUpgradeString(UpgradeType type)
     {
         switch (type)
         {
@@ -220,7 +220,7 @@ public class StatManager : MonoBehaviour
         }
     }
 
-    private UpgradeType GetUpgradeType(string type)
+    public UpgradeType GetUpgradeType(string type)
     {
         switch (type)
         {

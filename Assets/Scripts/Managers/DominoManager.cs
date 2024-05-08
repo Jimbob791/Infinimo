@@ -303,6 +303,8 @@ public class Domino
     public int leftNum;
     public int rightNum;
     public GameObject obj;
+
+    public string material;
 }
 
 public class Line

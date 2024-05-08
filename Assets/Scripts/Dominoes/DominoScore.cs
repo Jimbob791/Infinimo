@@ -103,6 +103,7 @@ public class DominoScore : MonoBehaviour
         yield return new WaitForSeconds(1.2f);
         score += (bonus * multi + superBonus) * superMulti;
         ChipManager.instance.AddProgress((bonus * multi + superBonus) * superMulti);
+        StatManager.instance.SaveData();
     }
 
     private void UpdateScore()

@@ -68,13 +68,13 @@ public class UpgradeManager : MonoBehaviour
 
         if (DominoScore.instance.score >= cost)
         {
-            if (upgrade == "multi" && line.multiplier + levelAmount - 1 < 50 * (line.prestige + 1))
+            if (upgrade == "multi" && line.multiplier + (levelAmount - 1) < 50 * (line.prestige + 1))
             {
                 DominoScore.instance.score -= cost;
                 line.multiplier += levelAmount;
                 StatManager.instance.SaveData();
             }
-            else if (upgrade == "add" && line.additive + levelAmount - 1 < 50 * (line.prestige + 1))
+            else if (upgrade == "add" && line.additive + (levelAmount - 1) < 50 * (line.prestige + 1))
             {
                 DominoScore.instance.score -= cost;
                 line.additive += levelAmount;
