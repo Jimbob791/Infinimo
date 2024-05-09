@@ -14,11 +14,13 @@ public class OfferController : MonoBehaviour
     public void MouseEnter()
     {
         outline.enabled = true;
+        transform.parent.transform.parent.GetComponent<DeckShopGenerator>().HoverOffer(this.gameObject);
     }
 
     public void MouseExit()
     {
         outline.enabled = false;
+        transform.parent.transform.parent.GetComponent<DeckShopGenerator>().ExitOffer(this.gameObject);
     }
 
     public void ClickOffer(GameObject pressedObj)

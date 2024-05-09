@@ -46,16 +46,13 @@ public class DominoManager : MonoBehaviour
     {
         if (deck.Count == 0)
         {
-            deckSize = CreateDeck(2);
+            CreateDeck();
 
             for (int i = 0; i < 1; i++)
             {
                 CreateLine(i, 1, 0, 0);
             }
         }
-
-        queue = deck;
-        ShuffleQueue();
     }
 
     private void Update()
@@ -207,36 +204,28 @@ public class DominoManager : MonoBehaviour
         autoplayRing.GetComponent<RingController>().UpdateRing(autoplayTime * (10f / (autoplayUpgrade.level + 10f)), timeSincePlayed);
     }
 
-    private int CreateDeck(int deckSize)
+    private void CreateDeck()
     {
-        int count = 0;
-        for (int i = 0; i < deckSize + 1; i++)
-        {
-            for (int k = 0; k < i + 1; k++)
-            {
-                Domino newDomino = new Domino();
-
-                newDomino.leftNum = i;
-                newDomino.rightNum = k;
-                newDomino.obj = Instantiate(dominoPrefab, queueParent.transform);
-
-                deck.Add(newDomino);
-                count++;
-            }
-        }
-        return count;
+        AddDomino(0, 0, "Plastic");
+        AddDomino(0, 1, "Plastic");
+        AddDomino(1, 1, "Plastic");
+        AddDomino(2, 1, "Plastic");
+        AddDomino(0, 2, "Plastic");
+        AddDomino(2, 2, "Plastic");
     }
 
-    public void AddDomino(int leftNum, int rightNum)
+    public void AddDomino(int leftNum, int rightNum, string material)
     {
         Domino newDomino = new Domino();
 
         newDomino.leftNum = leftNum;
         newDomino.rightNum = rightNum;
+        newDomino.material = material;
         newDomino.obj = Instantiate(dominoPrefab, queueParent.transform);
 
         newDomino.obj.GetComponent<DominoRenderer>().leftNum = leftNum;
         newDomino.obj.GetComponent<DominoRenderer>().rightNum = rightNum;
+        newDomino.obj.GetComponent<DominoRenderer>().material = material;
 
         queue.Add(newDomino);
         deck.Add(newDomino);

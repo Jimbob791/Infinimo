@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class DominoTooltip : MonoBehaviour
 {
@@ -34,13 +35,29 @@ public class DominoTooltip : MonoBehaviour
     public void DisplayTooltip(Domino domino)
     {
         display = true;
-        titleText.text = domino.leftNum + " - " + domino.rightNum;
+        currentTitle = domino.material + " " + domino.leftNum + " - " + domino.rightNum;
+        if (domino.material == "Plastic")
+        {
+            currentDesc = "A simple, plastic domino. No extra bonus.";
+        }
+        else if (domino.material == "Wooden")
+        {
+            currentDesc = "Wooden dominoes get x5 their base if matched with another wooden domino.";
+        }
+        else if (domino.material == "Golden")
+        {
+            currentDesc = "Golden dominoes count as double towards the current chip progress.";
+        }
+        else if (domino.material == "Marbled")
+        {
+            currentDesc = "Marbled dominoes score 1.5x as many pips compared to normal.";
+        }
     }
 
     public void CloseTooltip()
     {
         display = false;
 
-        currentText = "";
+        currentDesc = "";
     }
 }

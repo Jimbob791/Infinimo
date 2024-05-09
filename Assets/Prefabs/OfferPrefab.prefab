@@ -983,6 +983,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efd19f3a845c8f94db017fa82a541ae9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mainBacking: {fileID: 1617684352640478671}
+  shadowBacking: {fileID: 1617684353298802761}
+  materialInfo:
+  - sprite: {fileID: 21300000, guid: 203155c10471ff54c8a29ad13d1b88f2, type: 3}
+    material: Plastic
+    shadowColor: {r: 0.6509804, g: 0.52156866, b: 0.62352943, a: 1}
+  - sprite: {fileID: 21300000, guid: ecd7a1a666e2c1b45a706b53fad19c08, type: 3}
+    material: Wooden
+    shadowColor: {r: 0.5660378, g: 0.33606884, b: 0.16767532, a: 1}
+  - sprite: {fileID: 21300000, guid: a29eb61f81bf5aa4d86e965daa94f267, type: 3}
+    material: Golden
+    shadowColor: {r: 0.90199995, g: 0.6893706, b: 0.041492, a: 1}
+  - sprite: {fileID: 21300000, guid: 97123521490e78a41829b58f6892482b, type: 3}
+    material: Marbled
+    shadowColor: {r: 0.6509804, g: 0.58132553, b: 0.63620514, a: 1}
   images1:
   - {fileID: 1617684354261230666}
   - {fileID: 1617684354376477877}
@@ -1012,7 +1027,7 @@ MonoBehaviour:
     dots: 000001000000010000
   - dotColor: {r: 0.5176471, g: 0.39607844, b: 0.9254902, a: 1}
     dots: 000001000100010000
-  - dotColor: {r: 0.5529412, g: 0.7176471, b: 1, a: 1}
+  - dotColor: {r: 0.39999998, g: 0.6210526, b: 1, a: 1}
     dots: 010001000000010001
   - dotColor: {r: 0.35686275, g: 0.6509804, b: 0.45882353, a: 1}
     dots: 010001000100010001
@@ -1027,6 +1042,7 @@ MonoBehaviour:
   isInQueue: 0
   leftNum: 0
   rightNum: 0
+  material: 
 --- !u!1 &1617684353330834170
 GameObject:
   m_ObjectHideFlags: 0

@@ -67,7 +67,7 @@ public class DominoScore : MonoBehaviour
             displayScript.superBonus = System.Math.Pow(10, superBonus.level);
             displayScript.superMulti = System.Math.Pow(2, superMulti.level);
 
-            StartCoroutine(PauseScoreUpdate(scoreToAdd, multi, superBonusValue, superMultiValue));
+            StartCoroutine(PauseScoreUpdate(scoreToAdd, multi, superBonusValue, superMultiValue, played));
             return;
         }
 
@@ -84,13 +84,27 @@ public class DominoScore : MonoBehaviour
         display = Instantiate(scoreDisplay, new Vector3(linePos.x + 300, linePos.y, 0), Quaternion.identity, canvasParent.transform);
         displayScript = display.GetComponent<ScoreDisplay>();
         displayScript.match = true;
-        displayScript.leftPoints = played.leftNum + GetAdditive(line.additive, line);
-        displayScript.rightPoints = played.rightNum + GetAdditive(line.additive, line);
-        displayScript.scoreMultiplier = multi;
-        displayScript.superBonus = System.Math.Pow(10, superBonus.level);
-        displayScript.superMulti = System.Math.Pow(2, superMulti.level);
 
-        StartCoroutine(PauseScoreUpdate(scoreToAdd, multi, superBonusValue, superMultiValue));
+        if (played.material == "Wooden" && active.material == "Wooden")
+        {
+            scoreToAdd *= 5;
+            displayScript.leftPoints = (played.leftNum + GetAdditive(line.additive, line)) * 5;
+            displayScript.rightPoints = (played.rightNum + GetAdditive(line.additive, line)) * 5;
+        }
+        else
+        {
+            displayScript.leftPoints = played.leftNum + GetAdditive(line.additive, line);
+            displayScript.rightPoints = played.rightNum + GetAdditive(line.additive, line);
+        }
+    
+        displayScript.scoreMultiplier = multi;
+        displayScript.superBonus = superBonusValue;
+        if (played.material == "Marbled")
+            superMultiValue *= 1.5f;
+        
+        displayScript.superMulti = superMultiValue;
+
+        StartCoroutine(PauseScoreUpdate(scoreToAdd, multi, superBonusValue, superMultiValue, played));
     }
 
     public bool CheckMatch(Domino played, Domino active)
@@ -98,11 +112,15 @@ public class DominoScore : MonoBehaviour
         return active.rightNum == played.leftNum;
     }
 
-    private IEnumerator PauseScoreUpdate(double bonus, double multi, double superBonus, double superMulti)
+    private IEnumerator PauseScoreUpdate(double bonus, double multi, double superBonus, double superMulti, Domino played)
     {
         yield return new WaitForSeconds(1.2f);
         score += (bonus * multi + superBonus) * superMulti;
-        ChipManager.instance.AddProgress((bonus * multi + superBonus) * superMulti);
+        
+        if (played.material == "Golden")
+            ChipManager.instance.AddProgress((bonus * multi + superBonus) * superMulti * 2f);
+        else
+            ChipManager.instance.AddProgress((bonus * multi + superBonus) * superMulti);
         StatManager.instance.SaveData();
     }
 

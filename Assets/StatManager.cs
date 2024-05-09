@@ -112,7 +112,7 @@ public class StatManager : MonoBehaviour
         dominoManager.deck = new List<Domino>();
         foreach (DominoData data in loadData.dominoData)
         {
-            dominoManager.AddDomino(data.leftNum, data.rightNum);
+            dominoManager.AddDomino(data.leftNum, data.rightNum, data.material);
         }
         
         DateTime lastTime = new DateTime(loadData.timeData.year, loadData.timeData.month, loadData.timeData.day, loadData.timeData.hour, loadData.timeData.minute, loadData.timeData.second);
@@ -167,6 +167,7 @@ public class StatManager : MonoBehaviour
 
             newData.leftNum = dominoManager.deck[i].leftNum;
             newData.rightNum = dominoManager.deck[i].rightNum;
+            newData.material = dominoManager.deck[i].material;
 
             saveData.dominoData.Add(newData);
         }
@@ -342,4 +343,5 @@ public class DominoData
 {
     public int leftNum;
     public int rightNum;
+    public string material;
 }

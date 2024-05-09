@@ -7,6 +7,7 @@ public class DeckShopGenerator : MonoBehaviour
 {
     [SerializeField] GameObject offerPrefab;
     [SerializeField] GameObject offerParent;
+    [SerializeField] DominoTooltip dominoTooltip;
     [SerializeField] TextMeshProUGUI reloadCostText;
 
     List<ShopOffer> offers = new List<ShopOffer>();
@@ -60,12 +61,39 @@ public class DeckShopGenerator : MonoBehaviour
         lifetimePurchases += 1;
         pressedObj.GetComponent<Animator>().SetBool("buy", true);
 
-        DominoManager.instance.AddDomino(pressedOffer.leftNum, pressedOffer.rightNum);
+        DominoManager.instance.AddDomino(pressedOffer.leftNum, pressedOffer.rightNum, pressedOffer.material);
 
         StatManager.instance.SaveData();
 
         Destroy(pressedObj, 5f);
     }
+
+    public void HoverOffer(GameObject hoveredObj)
+    {
+        int offerIndex = 0;
+
+        for (int i = 0; i < offerObjects.Count; i++)
+        {
+            if (hoveredObj == offerObjects[i])
+            {
+                offerIndex = i;
+                break;
+            }
+        }
+
+        Domino temp = new Domino();
+        temp.leftNum = offers[offerIndex].leftNum;
+        temp.rightNum = offers[offerIndex].rightNum;
+        temp.material = offers[offerIndex].material;
+
+        dominoTooltip.DisplayTooltip(temp);
+    }
+
+    public void ExitOffer(GameObject hoveredObj)
+    {
+        dominoTooltip.CloseTooltip();
+    }
+
 
     public void GenerateNewOffers(bool ignoreCost)
     {        
@@ -106,6 +134,24 @@ public class DeckShopGenerator : MonoBehaviour
 
             newOffer.leftNum = Mathf.FloorToInt(Mathf.Pow(Random.Range(0, 100), 2) / 1000);
             newOffer.rightNum = Mathf.FloorToInt(Mathf.Pow(Random.Range(0, 100), 2) / 1000);
+            
+            int randomMaterialIndex = Random.Range(0, 100);
+            if (randomMaterialIndex < 80)
+            {
+                newOffer.material = "Plastic";
+            }
+            else if (randomMaterialIndex < 85)
+            {
+                newOffer.material = "Wooden";
+            }
+            else if (randomMaterialIndex < 95)
+            {
+                newOffer.material = "Marbled";
+            }
+            else
+            {
+                newOffer.material = "Golden";
+            }
 
             newOffer.cost = GetOfferCost(newOffer);
             if (newOffer.leftNum == newOffer.rightNum)
@@ -127,6 +173,7 @@ public class DeckShopGenerator : MonoBehaviour
             OfferController newController = newObj.GetComponent<OfferController>();
             newController.dominoObj.GetComponent<DominoUIRenderer>().leftNum = newOffer.leftNum;
             newController.dominoObj.GetComponent<DominoUIRenderer>().rightNum = newOffer.rightNum;
+            newController.dominoObj.GetComponent<DominoUIRenderer>().material = newOffer.material;
 
             offerObjects.Add(newObj);
 
@@ -138,7 +185,14 @@ public class DeckShopGenerator : MonoBehaviour
 
     private double GetOfferCost(ShopOffer offer)
     {
-        double cost = (System.Math.Pow(1.8f, lifetimePurchases + 1) * (offer.leftNum + 1) * (offer.rightNum + 1) / 4) * (10f / (boneyardDiscount.level + 10f));
+        double cost = (System.Math.Pow(1.8f, lifetimePurchases + 1) * (offer.leftNum + 1) * (offer.rightNum + 1) / 4);
+        if (offer.material == "Golden")
+            cost *= 4f;
+        if (offer.material == "Marbled")
+            cost *= 3f;
+        if (offer.material == "Wooden")
+            cost *= 1.5f;
+        cost *= (10f / (boneyardDiscount.level + 10f));
         return System.Math.Ceiling(cost);
     }
 }
@@ -147,6 +201,7 @@ public class ShopOffer
 {
     public int leftNum;
     public int rightNum;
+    public string material = "Plastic";
 
     public double cost;
 }
