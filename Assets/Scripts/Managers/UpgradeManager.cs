@@ -199,6 +199,7 @@ public class UpgradeManager : MonoBehaviour
             {
                 cost += Mathf.Pow(10, index + 1) + Mathf.Pow(i, index + 2);
             }
+            cost *= Mathf.Pow(3, prestige);
         }
 
         return System.Math.Floor(cost);

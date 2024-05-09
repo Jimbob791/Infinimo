@@ -45,31 +45,31 @@ public class PrestigeUpgrade : MonoBehaviour
         switch (type)
         {
             case UpgradeType.SuperMulti:
-                cost = 3 + Mathf.Pow(level, 2);
+                cost = 2 + 2 * level;
                 break;
             case UpgradeType.SuperBonus:
-                cost = 4 + Mathf.Pow(level, 2.5f);
+                cost = 2 + 2 * level;
                 break;
             case UpgradeType.ScoreSpeed:
-                cost = 2 + Mathf.Pow(3, level + 1);
+                cost = 2 + level;
                 break;
             case UpgradeType.AutoplaySpeed:
-                cost = 4 + Mathf.Pow(2, level + 1);
+                cost = 1 + level;
                 break;
             case UpgradeType.BoneyardDiscount:
-                cost = 2 * Mathf.Pow(level + 1, 2);
+                cost = 1 + level;
                 break;
             case UpgradeType.UpgradeDiscount:
-                cost = 1 + Mathf.Pow(1.5f, level);
+                cost = 1 + level;
                 break;
             case UpgradeType.BonusDiscount:
-                cost = 2 + Mathf.Pow(2, level);
+                cost = 2 + level;
                 break;
             case UpgradeType.ChipBonus:
-                cost = 4 + Mathf.Pow(4, level);
+                cost = 2 + 2 * level;
                 break;
             case UpgradeType.PrestigeDiscount:
-                cost = 2 + Mathf.Pow(3, level);
+                cost = 1 + level;
                 break;
             default:
                 cost = 0;

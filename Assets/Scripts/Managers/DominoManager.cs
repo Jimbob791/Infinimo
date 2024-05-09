@@ -121,7 +121,6 @@ public class DominoManager : MonoBehaviour
             activeDomino.obj.GetComponent<DominoController>().move = false;
             queue.RemoveAt(0);
             StartCoroutine(PlayDomino(lines[i], activeDomino));
-
             yield return new WaitForSeconds(0.25f);
         }
 
@@ -131,6 +130,8 @@ public class DominoManager : MonoBehaviour
 
     IEnumerator PlayDomino(Line line, Domino domino)
     {
+        if (domino.obj == null)
+            yield break;
         line.dominoes.Insert(0, domino);
         GameObject dominoObj = domino.obj;
         dominoObj.GetComponent<Animator>().enabled = true;
@@ -143,8 +144,12 @@ public class DominoManager : MonoBehaviour
         }
         dominoObj.GetComponent<Animator>().SetBool("scored", dominoMatch);
 
+        if (domino.obj == null)
+            yield break;
         yield return new WaitForSeconds(1 / playMulti);
         dominoObj.transform.SetParent(line.lineObject.transform);
+        if (domino.obj == null)
+            yield break;
         yield return new WaitForSeconds(1 / playMulti);
 
         TutorialController.instance.playedDomino = true;
@@ -158,6 +163,8 @@ public class DominoManager : MonoBehaviour
         else
         {
             GetComponent<DominoScore>().ScoreDominoes(line.dominoes[0], line.dominoes[1], line);
+            if (domino.obj == null)
+                yield break;
             yield return new WaitForSeconds(1.5f);
             TutorialController.instance.dominoMatched = true;
             dominoObj.GetComponent<Animator>().enabled = false;
@@ -229,6 +236,46 @@ public class DominoManager : MonoBehaviour
 
         queue.Add(newDomino);
         deck.Add(newDomino);
+
+        if (DeckMenuController.instance != null)
+            DeckMenuController.instance.UpdateDeckDisplay();
+    }
+
+    public void RemoveDomino(int index)
+    {
+        if (deck.Count <= 2)
+            return;
+
+        Domino removedDomino = deck[index];
+
+        foreach (Line line in lines)
+        {
+            for (int i = 0; i < line.dominoes.Count; i++)
+            {
+                Domino domino = line.dominoes[i];
+                if (removedDomino.leftNum == domino.leftNum && removedDomino.rightNum == domino.rightNum && removedDomino.material == domino.material)
+                {
+                    Destroy(domino.obj);
+                    line.dominoes.RemoveAt(i);
+                    break;
+                }
+            }
+        }
+
+        for (int i = 0; i < queue.Count; i++)
+        {
+            Domino domino = queue[i];
+            if (removedDomino.leftNum == domino.leftNum && removedDomino.rightNum == domino.rightNum && removedDomino.material == domino.material)
+            {
+                Destroy(domino.obj);
+                queue.RemoveAt(i);
+                break;
+            }
+        }
+
+        deck.RemoveAt(index);
+        if (DeckMenuController.instance != null)
+            DeckMenuController.instance.UpdateDeckDisplay();
     }
 
     public void CreateLine(int index, int multiLevel, int bonusLevel, int prestigeLevel)
