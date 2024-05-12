@@ -12,8 +12,8 @@ public class LineButtons : MonoBehaviour
 
     private void Update()
     {
-        Vector3 linePos = GameObject.Find("MainCamera").GetComponent<Camera>().WorldToScreenPoint(line.lineObject.transform.position);
-        transform.position = new Vector3(135, linePos.y, 0);
+        Vector3 linePos = line.lineObject.transform.position;
+        transform.localPosition = new Vector3(-800, linePos.y * 75, 0);
 
         prestigeButton.SetActive(line.multiplier == 50 * (line.prestige + 1));
     }

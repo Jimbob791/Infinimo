@@ -8,10 +8,13 @@ public class DominoScore : MonoBehaviour
 {
     public static DominoScore instance;
 
+    public int scoreCombo;
+
     public double score;
     public TextMeshProUGUI scoreText;
     [SerializeField] GameObject scoreDisplay;
     [SerializeField] GameObject canvasParent;
+    [SerializeField] GameObject scorePrefab;
     [SerializeField] PrestigeUpgrade superMulti;
     [SerializeField] PrestigeUpgrade superBonus;
 
@@ -55,10 +58,14 @@ public class DominoScore : MonoBehaviour
             multi = 1;
             scoreToAdd = 0;
             if (superBonusValue == 1)
+            {
+                StatManager.instance.SaveData();
                 return;
+            }
 
-            linePos = GameObject.Find("MainCamera").GetComponent<Camera>().WorldToScreenPoint(line.lineObject.transform.position);
-            display = Instantiate(scoreDisplay, new Vector3(linePos.x + 300, linePos.y, 0), Quaternion.identity, canvasParent.transform);
+            linePos = line.lineObject.transform.position;
+            display = Instantiate(scoreDisplay);
+            display.transform.SetParent(canvasParent.transform, false);
             displayScript = display.GetComponent<ScoreDisplay>();
             displayScript.match = false;
             displayScript.leftPoints = 0;
@@ -66,8 +73,10 @@ public class DominoScore : MonoBehaviour
             displayScript.scoreMultiplier = 1;
             displayScript.superBonus = System.Math.Pow(10, superBonus.level);
             displayScript.superMulti = System.Math.Pow(2, superMulti.level);
+            displayScript.linePos = linePos;
+            displayScript.index = line.index + 1;
 
-            StartCoroutine(PauseScoreUpdate(scoreToAdd, multi, superBonusValue, superMultiValue, played));
+            StartCoroutine(PauseScoreUpdate(scoreToAdd, multi, superBonusValue, superMultiValue, played, false));
             return;
         }
 
@@ -80,7 +89,7 @@ public class DominoScore : MonoBehaviour
             multi *= 2;
         }
 
-        linePos = GameObject.Find("MainCamera").GetComponent<Camera>().WorldToScreenPoint(line.lineObject.transform.position);
+        linePos = line.lineObject.transform.position;
         display = Instantiate(scoreDisplay, new Vector3(linePos.x + 300, linePos.y, 0), Quaternion.identity, canvasParent.transform);
         displayScript = display.GetComponent<ScoreDisplay>();
         displayScript.match = true;
@@ -97,14 +106,18 @@ public class DominoScore : MonoBehaviour
             displayScript.rightPoints = played.rightNum + GetAdditive(line.additive, line);
         }
     
-        displayScript.scoreMultiplier = multi;
+        
         displayScript.superBonus = superBonusValue;
         if (played.material == "Marbled")
-            superMultiValue *= 1.5f;
-        
-        displayScript.superMulti = superMultiValue;
+            multi *= 1.5f;
 
-        StartCoroutine(PauseScoreUpdate(scoreToAdd, multi, superBonusValue, superMultiValue, played));
+        displayScript.scoreMultiplier = multi;
+
+        displayScript.superMulti = superMultiValue;
+        displayScript.linePos = linePos;
+        displayScript.index = line.index + 1;
+
+        StartCoroutine(PauseScoreUpdate(scoreToAdd, multi, superBonusValue, superMultiValue, played, true));
     }
 
     public bool CheckMatch(Domino played, Domino active)
@@ -112,8 +125,13 @@ public class DominoScore : MonoBehaviour
         return active.rightNum == played.leftNum;
     }
 
-    private IEnumerator PauseScoreUpdate(double bonus, double multi, double superBonus, double superMulti, Domino played)
+    private IEnumerator PauseScoreUpdate(double bonus, double multi, double superBonus, double superMulti, Domino played, bool match)
     {
+        if (match)
+        {
+            StartCoroutine(ScoreSound(1 + scoreCombo * 0.2f));
+            scoreCombo += 1;
+        }
         yield return new WaitForSeconds(1.2f);
         score += (bonus * multi + superBonus) * superMulti;
         
@@ -122,6 +140,13 @@ public class DominoScore : MonoBehaviour
         else
             ChipManager.instance.AddProgress((bonus * multi + superBonus) * superMulti);
         StatManager.instance.SaveData();
+    }
+
+    IEnumerator ScoreSound(float pitch)
+    {
+        yield return new WaitForSeconds(0.8f);
+        GameObject newObj = Instantiate(scorePrefab);
+        newObj.GetComponent<AudioSource>().pitch = pitch;
     }
 
     private void UpdateScore()
@@ -165,7 +190,7 @@ public class DominoScore : MonoBehaviour
 
     public float GetMulti(int level, Line line)
     {
-        return level * Mathf.Pow(4, line.index) * Mathf.Pow(2, line.prestige);
+        return level * Mathf.Pow(4, line.index) * (line.prestige + 1);
     }
 
     public int GetAdditive(int level, Line line)

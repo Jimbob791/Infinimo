@@ -146,6 +146,7 @@ GameObject:
   - component: {fileID: 2595795683136182854}
   - component: {fileID: 2595795683136182855}
   - component: {fileID: -3051167841779302022}
+  - component: {fileID: 7744597550351261498}
   m_Layer: 5
   m_Name: ScoreUpDisplay
   m_TagString: Untagged
@@ -162,7 +163,7 @@ RectTransform:
   m_GameObject: {fileID: 2595795683136182849}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
+  m_LocalScale: {x: 0.6, y: 0.6, z: 0.6}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 2595795684139878945}
@@ -174,8 +175,8 @@ RectTransform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 1, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -211,18 +212,73 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91628867f9ed73744994eec3f63ad438, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  index: 0
   leftPoints: 0
   rightPoints: 0
   scoreMultiplier: 0
   superBonus: 0
   superMulti: 0
   match: 0
+  linePos: {x: 0, y: 0, z: 0}
   leftText: {fileID: 2595795684414592467}
   rightText: {fileID: 2595795683879292816}
   multiText: {fileID: 2595795682959044972}
   superBonusText: {fileID: 285064658434846110}
   superMultiText: {fileID: 660590894993007983}
   plusText: {fileID: 2595795684139878950}
+--- !u!114 &7744597550351261498
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2595795683136182849}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 180ecf9b41d478f468eb3e9083753217, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ImpulseDefinition:
+    m_ImpulseChannel: 1
+    m_ImpulseShape: 3
+    m_CustomImpulseShape:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_ImpulseDuration: 0.1
+    m_ImpulseType: 0
+    m_DissipationRate: 0.25
+    m_RawSignal: {fileID: 0}
+    m_AmplitudeGain: 1
+    m_FrequencyGain: 1
+    m_RepeatMode: 0
+    m_Randomize: 1
+    m_TimeEnvelope:
+      m_AttackShape:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      m_DecayShape:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      m_AttackTime: 0
+      m_SustainTime: 0.2
+      m_DecayTime: 0.7
+      m_ScaleWithImpact: 1
+      m_HoldForever: 0
+    m_ImpactRadius: 100
+    m_DirectionMode: 0
+    m_DissipationMode: 2
+    m_DissipationDistance: 100
+    m_PropagationSpeed: 343
+  m_DefaultVelocity: {x: 0, y: -1, z: 0}
 --- !u!1 &2595795683879292818
 GameObject:
   m_ObjectHideFlags: 0

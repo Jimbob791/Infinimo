@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cinemachine;
 
 public class DominoManager : MonoBehaviour
 {
@@ -18,6 +19,11 @@ public class DominoManager : MonoBehaviour
 
     [SerializeField] PrestigeUpgrade autoplayUpgrade;
     [SerializeField] PrestigeUpgrade scoreSpeed;
+
+    [SerializeField] GameObject slideSoundHand;
+    [SerializeField] GameObject slideSoundLine;
+    [SerializeField] GameObject hitSound;
+    [SerializeField] GameObject shuffleSound;
 
     public List<Domino> deck = new List<Domino>();
 
@@ -52,6 +58,10 @@ public class DominoManager : MonoBehaviour
             {
                 CreateLine(i, 1, 0, 0);
             }
+        }
+        else
+        {
+            ShuffleQueue();
         }
     }
 
@@ -93,13 +103,16 @@ public class DominoManager : MonoBehaviour
             foreach (Domino domino in queue)
             {
                 domino.obj.transform.SetParent(queueParent.transform);
+                domino.obj.transform.localPosition = new Vector3(0, -5, 0);
             }
             active = true;
             StartCoroutine(ResetShuffle());
+            Instantiate(shuffleSound);
             return;
         }
 
         active = true;
+        DominoScore.instance.scoreCombo = 0;
         StartCoroutine(PlayLines());
     }
 
@@ -117,6 +130,7 @@ public class DominoManager : MonoBehaviour
             {
                 break;
             }
+            Instantiate(slideSoundHand);
             activeDomino = queue[0];
             activeDomino.obj.GetComponent<DominoController>().move = false;
             queue.RemoveAt(0);
@@ -148,9 +162,15 @@ public class DominoManager : MonoBehaviour
             yield break;
         yield return new WaitForSeconds(1 / playMulti);
         dominoObj.transform.SetParent(line.lineObject.transform);
+        //Instantiate(slideSoundLine);
         if (domino.obj == null)
             yield break;
-        yield return new WaitForSeconds(1 / playMulti);
+        yield return new WaitForSeconds((1 / playMulti) - 0.05f);
+
+        Instantiate(hitSound);
+        GetComponent<CinemachineImpulseSource>().GenerateImpulseWithForce(1);
+
+        yield return new WaitForSeconds(0.05f);
 
         TutorialController.instance.playedDomino = true;
 
@@ -202,7 +222,6 @@ public class DominoManager : MonoBehaviour
         {
             Vector3 targetPos = new Vector3(0, 4 - (i * 2), 0);
             lines[i].lineObject.transform.localPosition = targetPos;
-            //Vector3.Lerp(lines[i].lineObject.transform.position, targetPos, 2 * Time.deltaTime);
         }
     }
 
@@ -223,6 +242,11 @@ public class DominoManager : MonoBehaviour
 
     public void AddDomino(int leftNum, int rightNum, string material)
     {
+        AddDomino(leftNum, rightNum, material, true);
+    }
+
+    public void AddDomino(int leftNum, int rightNum, string material, bool addToDeck)
+    {
         Domino newDomino = new Domino();
 
         newDomino.leftNum = leftNum;
@@ -235,7 +259,9 @@ public class DominoManager : MonoBehaviour
         newDomino.obj.GetComponent<DominoRenderer>().material = material;
 
         queue.Add(newDomino);
-        deck.Add(newDomino);
+
+        if (addToDeck)
+            deck.Add(newDomino);
 
         if (DeckMenuController.instance != null)
             DeckMenuController.instance.UpdateDeckDisplay();
@@ -247,33 +273,28 @@ public class DominoManager : MonoBehaviour
             return;
 
         Domino removedDomino = deck[index];
+        deck.RemoveAt(index);
 
         foreach (Line line in lines)
         {
-            for (int i = 0; i < line.dominoes.Count; i++)
+            for (int i = line.dominoes.Count - 1; i >= 0; i--)
             {
-                Domino domino = line.dominoes[i];
-                if (removedDomino.leftNum == domino.leftNum && removedDomino.rightNum == domino.rightNum && removedDomino.material == domino.material)
-                {
-                    Destroy(domino.obj);
-                    line.dominoes.RemoveAt(i);
-                    break;
-                }
+                Destroy(line.dominoes[i].obj);
+                line.dominoes.RemoveAt(i);
             }
         }
 
-        for (int i = 0; i < queue.Count; i++)
+        for (int i = queue.Count - 1; i >= 0; i--)
         {
-            Domino domino = queue[i];
-            if (removedDomino.leftNum == domino.leftNum && removedDomino.rightNum == domino.rightNum && removedDomino.material == domino.material)
-            {
-                Destroy(domino.obj);
-                queue.RemoveAt(i);
-                break;
-            }
+            Destroy(queue[i].obj);
+            queue.RemoveAt(i);
         }
 
-        deck.RemoveAt(index);
+        foreach(Domino domino in deck)
+        {
+            AddDomino(domino.leftNum, domino.rightNum, domino.material, false);
+        }
+
         if (DeckMenuController.instance != null)
             DeckMenuController.instance.UpdateDeckDisplay();
     }
@@ -289,7 +310,7 @@ public class DominoManager : MonoBehaviour
         lines.Add(newLine);
 
         GameObject newButtons = Instantiate(buttonsPrefab);
-        newButtons.transform.SetParent(GameObject.Find("TextCanvas").transform);
+        newButtons.transform.SetParent(GameObject.Find("TextCanvas").transform, false);
         newButtons.GetComponent<LineButtons>().line = newLine;
         UpdateLines();
     }

@@ -12,8 +12,14 @@ public class UpgradeManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI upgradeDescription;
     [SerializeField] TextMeshProUGUI upgradeCost;
 
+    [SerializeField] TextMeshProUGUI upgradeAmountText;
+
     [SerializeField] PrestigeUpgrade bonusDiscount;
     [SerializeField] PrestigeUpgrade multiDiscount;
+
+    [SerializeField] GameObject prestigeSound;
+
+    public int upgradeAmount = 1;
 
     double cost;
 
@@ -31,6 +37,33 @@ public class UpgradeManager : MonoBehaviour
         {
             Destroy(this.gameObject);
         }
+
+        upgradeAmount = 1;
+    }
+
+    public void PrestigeSound()
+    {
+        Instantiate(prestigeSound);
+    }
+
+    public void ToggleBuyAmount()
+    {
+        StatManager.instance.Click();
+
+        if (upgradeAmount == 1)
+        {
+            upgradeAmount = 10;
+        }
+        else if (upgradeAmount == 10)
+        {
+            upgradeAmount = 50;
+        }
+        else if (upgradeAmount == 50)
+        {
+            upgradeAmount = 1;
+        }
+
+        upgradeAmountText.text = "x" + upgradeAmount;
     }
 
     private void Update()
@@ -43,19 +76,22 @@ public class UpgradeManager : MonoBehaviour
 
     public void AttemptBuy(string upgrade, Line line)
     {
-        double cost = 0;
-        int levelAmount = 1;
-        if (Input.GetKey(KeyCode.LeftShift) && upgrade != "prestige")
+        if (upgrade != "prestige")
         {
-            levelAmount = 10;
+            StatManager.instance.Click();
+        }
+
+        double cost = 0;
+        int levelAmount = upgradeAmount;
+        if (levelAmount == 10 && upgrade != "prestige")
+        {
             for (int i = 0; i < 10; i++)
             {
                 cost += GetCost(upgrade, line.index, line.multiplier + i, line.additive + i, line.prestige);
             }
         }
-        else if (Input.GetKey(KeyCode.LeftControl) && upgrade != "prestige")
+        else if (levelAmount == 50 && upgrade != "prestige")
         {
-            levelAmount = 50;
             for (int i = 0; i < 50; i++)
             {
                 cost += GetCost(upgrade, line.index, line.multiplier + i, line.additive + i, line.prestige);
@@ -89,6 +125,7 @@ public class UpgradeManager : MonoBehaviour
                 AddPrestigeIcon(line, line.prestige);
 
                 Debug.Log("Line Prestiged " + line.prestige);
+                Instantiate(prestigeSound);
 
                 over = false;
                 DisplayUpgradeInfo("none", line);
@@ -99,7 +136,7 @@ public class UpgradeManager : MonoBehaviour
 
     public void AddPrestigeIcon(Line line, int prestige)
     {
-        GameObject newObj = Instantiate(prestigePrefab, new Vector3(1 + ((prestige - 1) * 0.3f), -0.15f, 0), Quaternion.identity);
+        GameObject newObj = Instantiate(prestigePrefab, new Vector3(1 + ((prestige - 1) * 0.2f), -0.15f, 0), Quaternion.identity);
         newObj.transform.SetParent(line.lineObject.transform, false);
         newObj.GetComponent<SpriteRenderer>().sortingOrder = -prestige;
     }
@@ -107,18 +144,16 @@ public class UpgradeManager : MonoBehaviour
     public void DisplayUpgradeInfo(string upgrade, Line line)
     {   
         double cost = 0;
-        int levelAmount = 1;
-        if (Input.GetKey(KeyCode.LeftShift) && upgrade != "prestige")
+        int levelAmount = upgradeAmount;
+        if (levelAmount == 10 && upgrade != "prestige")
         {
-            levelAmount = 10;
             for (int i = 0; i < 10; i++)
             {
                 cost += GetCost(upgrade, line.index, line.multiplier + i, line.additive + i, line.prestige);
             }
         }
-        else if (Input.GetKey(KeyCode.LeftControl) && upgrade != "prestige")
+        else if (levelAmount == 50 && upgrade != "prestige")
         {
-            levelAmount = 50;
             for (int i = 0; i < 50; i++)
             {
                 cost += GetCost(upgrade, line.index, line.multiplier + i, line.additive + i, line.prestige);
@@ -145,7 +180,7 @@ public class UpgradeManager : MonoBehaviour
             }
             else
             {
-                upgradeTitle.text = "UPGRADE MULTI LVL" + line.multiplier;
+                upgradeTitle.text = "UPGRADE MULTI LVL" + line.multiplier + " +" + upgradeAmount;
                 upgradeDescription.text = "x" + DominoScore.instance.GetMulti(line.multiplier, line) + " => x" + DominoScore.instance.GetMulti(line.multiplier + levelAmount, line);
             }
         }
@@ -158,7 +193,7 @@ public class UpgradeManager : MonoBehaviour
             }
             else
             {
-                upgradeTitle.text = "UPGRADE BONUS LVL" + line.additive;
+                upgradeTitle.text = "UPGRADE BONUS LVL" + line.additive + " +" + upgradeAmount;
                 upgradeDescription.text = "+" + DominoScore.instance.GetAdditive(line.additive, line) + " => +" + DominoScore.instance.GetAdditive(line.additive + levelAmount, line);
             }
         }
@@ -170,7 +205,7 @@ public class UpgradeManager : MonoBehaviour
         else if (upgrade == "prestige")
         {
             upgradeTitle.text = "PRESTIGE LINE";
-            upgradeDescription.text = "NEW MAX LVL " + ((line.prestige + 2) * 50) + "  |  +1 BONUS  |  x2 MULTI";
+            upgradeDescription.text = "NEW MAX LVL " + ((line.prestige + 2) * 50) + "  |  +1 BONUS  |  "+ "+" + Mathf.Pow(4, line.index) + " BASE MULTI";
         }
 
         upgradeCost.text = DominoScore.instance.FormatLargeNumber(cost) + " Pips";
@@ -183,11 +218,13 @@ public class UpgradeManager : MonoBehaviour
         {
             cost = Mathf.Pow(10, index + 1) + Mathf.Pow(multiplier, index + 2);
             cost *= (10f / (multiDiscount.level + 10f));
+            cost *= prestige + 1;
         }
         else if (upgrade == "add")
         {
             cost = Mathf.Pow(10, index) + Mathf.Pow(additive, index + 4);
             cost *= (10f / (bonusDiscount.level + 10f));
+            cost *= prestige + 1;
         }
         else if (upgrade == "newLine")
         {

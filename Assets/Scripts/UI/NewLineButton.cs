@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class NewLineButton : MonoBehaviour
 {
+    [SerializeField] GameObject newLineSfx;
+
     private void Update()
     {
         transform.localPosition = new Vector3(-180, 320 - (DominoManager.instance.lines.Count * 160), 0);
@@ -37,6 +39,7 @@ public class NewLineButton : MonoBehaviour
         if (cost <= DominoScore.instance.score)
         {
             DominoScore.instance.score -= cost;
+            Instantiate(newLineSfx);
 
             DominoManager.instance.CreateLine(DominoManager.instance.lines.Count, 1, 0, 0);
         }
