@@ -85,6 +85,14 @@ public class DominoManager : MonoBehaviour
         }
     }
 
+    public void TapPlay()
+    {
+        if (!active)
+        {
+            AttemptPlay();
+        }
+    }
+
     private void AttemptPlay()
     {
         timeSincePlayed = 0;

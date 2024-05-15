@@ -140,8 +140,8 @@ public class DeckShopGenerator : MonoBehaviour
         {
             ShopOffer newOffer = new ShopOffer();
 
-            newOffer.leftNum = Mathf.FloorToInt(Mathf.Pow(Random.Range(0, 100), 2) / 1000);
-            newOffer.rightNum = Mathf.FloorToInt(Mathf.Pow(Random.Range(0, 100), 2) / 1000);
+            newOffer.leftNum = Mathf.FloorToInt(Random.Range(0, 100) / 10);
+            newOffer.rightNum = Mathf.FloorToInt(Random.Range(0, 100) / 10);
             
             int randomMaterialIndex = Random.Range(0, 100);
             if (randomMaterialIndex < 80)

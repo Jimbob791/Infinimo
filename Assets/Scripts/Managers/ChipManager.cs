@@ -69,7 +69,7 @@ public class ChipManager : MonoBehaviour
 
     double GetNextPips()
     {
-        return 90 + 10 * System.Math.Pow(4, totalChips);
+        return 90 + 10 * System.Math.Pow(3, totalChips);
     }
 
     public void AddProgress(double pips)

@@ -55,5 +55,7 @@ public class UpgradeTooltip : MonoBehaviour
 public class UpgradeTooltipInfo
 {
     public UpgradeType type;
+
+    [TextArea(10,10)]
     public string description;
 }

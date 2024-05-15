@@ -281,7 +281,7 @@ public class StatManager : MonoBehaviour
         double superMultiValue = Math.Pow(2, superMulti.level);
         double averageTotalScore = (averageBaseScore + superBonusValue) * superMultiValue;
 
-        double scorePerSecond = averageTotalScore / (dominoManager.autoplayTime * (10f / (autoplayUpgrade.level + 10f)));
+        double scorePerSecond = (averageTotalScore * dominoManager.lines.Count) / (dominoManager.autoplayTime * (10f / (autoplayUpgrade.level + 10f)));
         double totalOfflineEarnings = scorePerSecond * totalSeconds * 0.2f * (1 + (offlineUpgrade.level * 0.5f));
         dominoScore.score += Math.Ceiling(totalOfflineEarnings);
         chipManager.AddProgress(Math.Ceiling(totalOfflineEarnings * Mathf.Pow(2, chipMulti.level)));

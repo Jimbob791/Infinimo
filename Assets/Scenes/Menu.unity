@@ -1884,6 +1884,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f71ce39cc9d3384294daa259c64059e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  deckController: {fileID: 0}
   upgradesAnim: {fileID: 0}
   shopAnim: {fileID: 0}
 --- !u!1 &291947098
@@ -2362,7 +2363,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
   m_AnchoredPosition: {x: 0, y: -0.000091552734}
-  m_SizeDelta: {x: 1000, y: 1500}
+  m_SizeDelta: {x: 1000, y: 500}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!1 &447628481
 GameObject:
@@ -5750,7 +5751,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Testing Ver. D0.1.9
+  m_text: Alpha 0.2.3
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 41a56967002fd8b47815ab0dd0354b15, type: 2}
   m_sharedMaterial: {fileID: 2668751202224337536, guid: 41a56967002fd8b47815ab0dd0354b15, type: 2}
@@ -13336,8 +13337,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 158016548}
   m_HandleRect: {fileID: 158016547}
   m_Direction: 2
-  m_Value: 1.0000001
-  m_Size: 0.32666665
+  m_Value: 1.0000092
+  m_Size: 0.98
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
