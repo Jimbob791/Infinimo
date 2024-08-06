@@ -17,6 +17,7 @@ public class StatManager : MonoBehaviour
     public UpgradeManager upgradeManager;
     public ChipManager chipManager;
     public DeckShopGenerator deckShopManager;
+    public DeckMenuController deckMenuController;
     public List<PrestigeUpgrade> upgrades = new List<PrestigeUpgrade>();
 
     [Space]
@@ -91,6 +92,7 @@ public class StatManager : MonoBehaviour
 
         deckShopManager.lifetimePurchases = loadData.numBoughtDominoes;
         deckShopManager.lifetimeReloads = loadData.numReloads;
+        deckMenuController.lifetimeDestroys = loadData.numDestroys;
 
         for (int i = 0; i < loadData.upgradeData.Count; i++)
         {
@@ -140,6 +142,7 @@ public class StatManager : MonoBehaviour
 
         saveData.numBoughtDominoes = deckShopManager.lifetimePurchases;
         saveData.numReloads = deckShopManager.lifetimeReloads;
+        saveData.numDestroys = deckMenuController.lifetimeDestroys;
 
         for (int i = 0; i < upgrades.Count; i++)
         {
@@ -310,6 +313,7 @@ public class SaveData
 
     public int numBoughtDominoes;
     public int numReloads;
+    public int numDestroys;
 
     public List<UpgradeData> upgradeData = new List<UpgradeData>();
     public List<LineData> lineData = new List<LineData>();

@@ -4129,8 +4129,8 @@ MonoBehaviour:
     description: Reduces the cost of leveling up a line's bonus level. Each level
       reduces cost by 10%.
   - type: 7
-    description: Scored pips are multiplied when used to increase chip progress.
-      Each level doubles the effect pips have towards the next chip.
+    description: Scored pips are multiplied for current chip progress. Each level
+      doubles the multiplier towards the next chip.
   - type: 8
     description: Reduces the cost of all chip-based upgrades, excluding removals.
       Each level reduces cost by 10%, rounded up.
@@ -5661,7 +5661,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_text: Pips can also be spent on adding dominoes to your deck! Dominoes can also
-    be destroyed through the "deck" menu, for a price.
+    be destroyed, you get one destroy for each earnt chip.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 130acc57053059541b643935df2fe7c7, type: 2}
   m_sharedMaterial: {fileID: -7312992715623402806, guid: 130acc57053059541b643935df2fe7c7, type: 2}
@@ -10908,6 +10908,7 @@ MonoBehaviour:
   upgradeManager: {fileID: 997586769}
   chipManager: {fileID: 968622368}
   deckShopManager: {fileID: 1382521369}
+  deckMenuController: {fileID: 2092349126}
   upgrades:
   - {fileID: 1167898348}
   - {fileID: 608747253}
@@ -14966,7 +14967,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Reduces the cost of all chip-based upgrades, excluding removals.
+  m_text: Scored pips are multiplied for current chip progress. Each level doubles
+    the multiplier towards the next chip.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 41a56967002fd8b47815ab0dd0354b15, type: 2}
   m_sharedMaterial: {fileID: 2668751202224337536, guid: 41a56967002fd8b47815ab0dd0354b15, type: 2}
@@ -18016,7 +18018,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'REMOVE: 222.22Sp'
+  m_text: 'REMOVE: 1 LEFT'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 130acc57053059541b643935df2fe7c7, type: 2}
   m_sharedMaterial: {fileID: -7312992715623402806, guid: 130acc57053059541b643935df2fe7c7, type: 2}
@@ -22575,6 +22577,8 @@ MonoBehaviour:
   hoverSound: {fileID: 6673909860263299430, guid: 8528b906a2d085248b55e53993abc0be, type: 3}
   deleteSound: {fileID: 6673909860263299430, guid: 92d0df71a44ef7543a0abb912cdfe375, type: 3}
   dominoTooltip: {fileID: 127959173}
+  removeText: {fileID: 1658074001}
+  lifetimeDestroys: 0
 --- !u!95 &2092349127
 Animator:
   serializedVersion: 5

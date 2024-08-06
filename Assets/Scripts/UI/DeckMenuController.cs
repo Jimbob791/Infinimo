@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class DeckMenuController : MonoBehaviour
 {
@@ -13,10 +14,13 @@ public class DeckMenuController : MonoBehaviour
     [SerializeField] GameObject hoverSound;
     [SerializeField] GameObject deleteSound;
     [SerializeField] DominoTooltip dominoTooltip;
+    [SerializeField] TextMeshProUGUI removeText;
     List<GameObject> deckObjects = new List<GameObject>();
     int selectedIndex = -1;
 
     bool display;
+
+    public int lifetimeDestroys;
 
     void Awake()
     {
@@ -37,6 +41,8 @@ public class DeckMenuController : MonoBehaviour
 
     void Update()
     {
+        removeText.text = "REMOVE: " + (ChipManager.instance.totalChips - lifetimeDestroys) + " LEFT";
+
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             headerButtons.CloseShop();
@@ -109,10 +115,11 @@ public class DeckMenuController : MonoBehaviour
 
     public void RemoveSelected()
     {
-        if (selectedIndex == -1 || ChipManager.instance.chips < 1)
+        if (selectedIndex == -1 || ChipManager.instance.totalChips - lifetimeDestroys < 1)
             return;
 
-        ChipManager.instance.chips -= 1;
+        lifetimeDestroys += 1;
+        
         Instantiate(deleteSound);
         DominoManager.instance.RemoveDomino(selectedIndex);
     }

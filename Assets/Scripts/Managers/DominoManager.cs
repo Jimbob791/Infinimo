@@ -305,6 +305,8 @@ public class DominoManager : MonoBehaviour
 
         if (DeckMenuController.instance != null)
             DeckMenuController.instance.UpdateDeckDisplay();
+
+        StatManager.instance.SaveData();
     }
 
     public void CreateLine(int index, int multiLevel, int bonusLevel, int prestigeLevel)
